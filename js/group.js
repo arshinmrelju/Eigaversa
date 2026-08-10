@@ -317,7 +317,10 @@ document.addEventListener('DOMContentLoaded', function () {
       if (result) {
         form.reset();
         rebuildMembers();
-        showSuccess('Group registration submitted successfully. Your registration ID is ' + result.registrationId + '.');
+        showSuccess('Group registration submitted successfully! Your entry pass has been generated below.');
+        if (window.EigaversaTicket) {
+          window.EigaversaTicket.showGroupPass(data, result.registrationId);
+        }
       } else {
         showSuccess('Registration failed. Please check your connection and try again.', true);
       }

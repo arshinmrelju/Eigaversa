@@ -142,7 +142,10 @@
       setBusy(false);
       if (result) {
         form.reset();
-        showMessage('Registration submitted successfully. Your registration ID is ' + result.registrationId + '.');
+        showMessage('Registration submitted successfully! Your entry pass has been generated below.');
+        if (window.EigaversaTicket) {
+          window.EigaversaTicket.showSoloPass(data, result.registrationId);
+        }
       } else {
         showMessage('Registration failed. Please check your connection and try again.', true);
       }

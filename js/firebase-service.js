@@ -12,6 +12,8 @@ import {
   doc,
   getDoc,
   getDocs,
+  query,
+  where,
   updateDoc,
   deleteDoc,
   setDoc,
@@ -229,6 +231,37 @@ async function deleteRegistration(collectionName, id) {
   }
 }
 
+async function getRegistrationById(registrationId) {
+  if (!db || !registrationId) return null;
+  try {
+    var regId = registrationId.trim().toUpperCase();
+    var isGroup = regId.indexOf('EIG-G') === 0;
+    var collName = isGroup ? 'eigaversa_groups' : 'eigaversa_solo';
+
+    var q = query(collection(db, collName), where('registrationId', '==', regId));
+    var snap = await getDocs(q);
+
+    if (!snap.empty) {
+      var d = snap.docs[0].data();
+      var registeredAt = d.registeredAt && d.registeredAt.toDate ? d.registeredAt.toDate() : null;
+      return { id: snap.docs[0].id, registeredAtDate: registeredAt, ...d };
+    }
+
+    var otherColl = isGroup ? 'eigaversa_solo' : 'eigaversa_groups';
+    var q2 = query(collection(db, otherColl), where('registrationId', '==', regId));
+    var snap2 = await getDocs(q2);
+    if (!snap2.empty) {
+      var d2 = snap2.docs[0].data();
+      var registeredAt2 = d2.registeredAt && d2.registeredAt.toDate ? d2.registeredAt.toDate() : null;
+      return { id: snap2.docs[0].id, registeredAtDate: registeredAt2, ...d2 };
+    }
+    return null;
+  } catch (e) {
+    console.warn('Firestore getRegistrationById error:', e);
+    return null;
+  }
+}
+
 /* ---------- Expose globally for non-module scripts ---------- */
 
 window.EigaversaFirebase = {
@@ -237,6 +270,7 @@ window.EigaversaFirebase = {
   },
   saveSoloRegistration: saveSoloRegistration,
   saveGroupRegistration: saveGroupRegistration,
+  getRegistrationById: getRegistrationById,
   getAdminConfig: getAdminConfig,
   setAdminConfig: setAdminConfig,
   subscribeToSolo: subscribeToSolo,

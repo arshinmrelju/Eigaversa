@@ -328,7 +328,21 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
 
+      var passBtn = document.createElement('button');
+      passBtn.type = 'button';
+      passBtn.className = 'btn btn-ghost btn-sm';
+      passBtn.style.padding = '4px 8px';
+      passBtn.style.fontSize = '0.78rem';
+      passBtn.textContent = '🎟️ Pass';
+      passBtn.setAttribute('aria-label', 'View pass for ' + doc.registrationId);
+      passBtn.addEventListener('click', function () {
+        if (window.EigaversaTicket) {
+          window.EigaversaTicket.showModal(doc, doc.registrationId);
+        }
+      });
+
       actionsTd.appendChild(statusSelect);
+      actionsTd.appendChild(passBtn);
       actionsTd.appendChild(deleteBtn);
       tr.appendChild(actionsTd);
 
