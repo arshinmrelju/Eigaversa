@@ -128,7 +128,7 @@
     var regId = registrationId || data.registrationId || 'EIG-PASS';
     var dateStr = data.registeredAtDate ? data.registeredAtDate.toLocaleDateString() : new Date().toLocaleDateString();
     
-    var qrPayload = 'EIGAVERSA|' + regId + '|' + (isGroup ? 'GROUP' : 'SOLO') + '|' + titleName;
+    var qrPayload = 'EIGAVERSA|' + regId + '|' + (isGroup ? 'GROUP' : 'SOLO') + '|' + titleName + '|' + (data.id || '');
     var qrSvg = generateQRCodeSVG(qrPayload, 120);
 
     var membersHTML = '';

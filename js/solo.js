@@ -157,6 +157,7 @@
         form.reset();
         showMessage('Registration submitted successfully! Your entry pass has been generated below.');
         if (window.EigaversaTicket) {
+          data.id = result.id;
           window.EigaversaTicket.showSoloPass(data, result.registrationId);
         }
       } else {

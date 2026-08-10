@@ -325,6 +325,7 @@ document.addEventListener('DOMContentLoaded', function () {
         rebuildMembers();
         showSuccess('Group registration submitted successfully! Your entry pass has been generated below.');
         if (window.EigaversaTicket) {
+          data.id = result.id;
           window.EigaversaTicket.showGroupPass(data, result.registrationId);
         }
       } else {

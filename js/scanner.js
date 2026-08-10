@@ -255,29 +255,46 @@
 
   /* ---------- Payload handling ---------- */
 
-  function extractRegId(text) {
-    if (!text) return '';
+  // Payload: EIGAVERSA|<regId>|<SOLO|GROUP>|<name>|<docId>
+  function parsePayload(text) {
+    if (!text) return null;
     var s = String(text).trim();
-    if (s.indexOf('EIGAVERSA|') === 0) s = s.slice('EIGAVERSA|'.length);
-    return s.split('|')[0].trim();
+    if (s.indexOf('EIGAVERSA|') !== 0) return null;
+    var parts = s.split('|');
+    return {
+      regId: (parts[1] || '').trim().toUpperCase(),
+      type: (parts[2] || '').toUpperCase(),
+      name: parts[3] ? parts[3].trim() : '',
+      docId: parts[4] ? parts[4].trim() : ''
+    };
   }
 
-  function handleScan(text) {
-    if (awaiting) return;
-    var regId = extractRegId(text);
-    if (!regId) return;
+  function resultHTML(kind, regId, displayName, typeLabel) {
+    var strong = kind === 'already' ? 'Already Approved' : 'Registration Approved';
+    return '<span class="scan-result-icon">&#10003;</span>' +
+      '<strong>' + strong + '</strong>' +
+      '<span class="scan-result-id">' + escapeHtml(regId) + '</span>' +
+      '<span class="scan-result-name">' + escapeHtml(displayName) + ' <em>(' + typeLabel + ')</em></span>';
+  }
 
+  function approveDirect(payload) {
+    var collName = payload.type === 'GROUP' ? 'eigaversa_groups' : 'eigaversa_solo';
+    var typeLabel = payload.type === 'GROUP' ? 'Group' : 'Solo';
     var fb = getFirebase();
-    if (!fb || !fb.isConfigured()) {
-      setStatus('Firebase is not configured.', true);
-      return;
-    }
+    fb.updateRegistrationStatus(collName, payload.docId, 'approved').then(function (ok) {
+      if (ok) {
+        showResult(resultHTML('approved', payload.regId, payload.name || 'Participant', typeLabel));
+      } else {
+        setStatus('Failed to approve ' + payload.regId + '. Try again.', true);
+      }
+      cooldownUntil = Date.now() + 2000;
+      resumeScan(2600);
+    });
+  }
 
-    awaiting = true;
-    lastScannedData = text;
-    lastScannedAt = Date.now();
-    setStatus('Checking ' + regId + ' ...');
-
+  function approveAfterLookup(payload) {
+    var regId = payload.regId;
+    var fb = getFirebase();
     fb.getRegistrationById(regId).then(function (record) {
       if (!record) {
         setStatus('No registration found for ' + regId + '.', true);
@@ -294,12 +311,7 @@
       var typeLabel = (record.type === 'group' || record.teamName) ? 'Group' : 'Solo';
 
       if (record.status === 'approved') {
-        showResult(
-          '<span class="scan-result-icon">&#10003;</span>' +
-          '<strong>Already Approved</strong>' +
-          '<span class="scan-result-id">' + escapeHtml(record.registrationId || regId) + '</span>' +
-          '<span class="scan-result-name">' + escapeHtml(displayName) + ' <em>(' + typeLabel + ')</em></span>'
-        );
+        showResult(resultHTML('already', record.registrationId || regId, displayName, typeLabel));
         cooldownUntil = Date.now() + 2000;
         resumeScan(2600);
         return;
@@ -307,12 +319,7 @@
 
       fb.updateRegistrationStatus(collName, record.id, 'approved').then(function (ok) {
         if (ok) {
-          showResult(
-            '<span class="scan-result-icon">&#10003;</span>' +
-            '<strong>Registration Approved</strong>' +
-            '<span class="scan-result-id">' + escapeHtml(record.registrationId || regId) + '</span>' +
-            '<span class="scan-result-name">' + escapeHtml(displayName) + ' <em>(' + typeLabel + ')</em></span>'
-          );
+          showResult(resultHTML('approved', record.registrationId || regId, displayName, typeLabel));
           cooldownUntil = Date.now() + 2000;
           resumeScan(2600);
         } else {
@@ -326,6 +333,34 @@
       cooldownUntil = Date.now() + 1500;
       resumeScan(1800);
     });
+  }
+
+  function handleScan(text) {
+    if (awaiting) return;
+    var payload = parsePayload(text);
+    if (!payload || !payload.regId) return;
+
+    var fb = getFirebase();
+    if (!fb || !fb.isConfigured()) {
+      setStatus('Firebase is not configured.', true);
+      return;
+    }
+
+    awaiting = true;
+    lastScannedData = text;
+    lastScannedAt = Date.now();
+
+    // Fast path: docId is baked into the QR -> single Firestore write.
+    // No lookup query, so approval happens in milliseconds.
+    if (payload.docId) {
+      setStatus('Approving ' + payload.regId + ' ...');
+      approveDirect(payload);
+      return;
+    }
+
+    // Fallback for passes encoded without a docId.
+    setStatus('Checking ' + payload.regId + ' ...');
+    approveAfterLookup(payload);
   }
 
   /* ---------- Wiring ---------- */
