@@ -20,6 +20,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var YEARS = ['1st Year', '2nd Year', '3rd Year', '1st Year (PG)', '2nd Year (PG)'];
 
+  var ROLL_NUMBERS = [];
+  for (var rn = 1; rn <= 100; rn++) {
+    ROLL_NUMBERS.push(String(rn));
+  }
+
   /* --- Member card markup --- */
 
   function buildMemberCard(index) {
@@ -43,12 +48,12 @@ document.addEventListener('DOMContentLoaded', function () {
     head.appendChild(removeBtn);
 
     var nameField = buildField('text', 'name', index, 'Full Name', 'Member full name');
-    var phoneField = buildField('tel', 'phone', index, 'Phone Number', 'e.g. 98XXXXXXXX');
+    var rollField = buildSelect('rollNo', index, 'Roll Number', ROLL_NUMBERS, 'Select roll number');
     var yearField = buildSelect('year', index, 'Year of Studying', YEARS, 'Select your year');
 
     card.appendChild(head);
     card.appendChild(nameField);
-    card.appendChild(phoneField);
+    card.appendChild(rollField);
     card.appendChild(yearField);
 
     return card;
@@ -265,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function () {
     container.querySelectorAll('.member-card').forEach(function (card) {
       members.push({
         name: card.querySelector('input[name="name"]').value.trim(),
-        phone: card.querySelector('input[name="phone"]').value.trim(),
+        rollNo: card.querySelector('select[name="rollNo"]').value,
         year: card.querySelector('select[name="year"]').value
       });
     });
@@ -306,6 +311,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var data = {
       teamName: form.querySelector('#team-name').value.trim(),
       department: form.querySelector('#team-department').value,
+      phone: form.querySelector('#team-phone').value.trim(),
       theme: form.querySelector('#team-theme').value,
       members: collectMembers()
     };

@@ -210,10 +210,10 @@ document.addEventListener('DOMContentLoaded', function () {
       .map(function (doc) {
         var searchable;
         if (currentTab === 'solo') {
-          searchable = [doc.registrationId, doc.name, doc.phone, doc.department].join(' ').toLowerCase();
+          searchable = [doc.registrationId, doc.name, doc.phone, doc.department, doc.rollNo].join(' ').toLowerCase();
         } else {
           var memberNames = (doc.members || []).map(function (m) { return m.name; }).join(' ');
-          searchable = [doc.registrationId, doc.teamName, doc.department, memberNames].join(' ').toLowerCase();
+          searchable = [doc.registrationId, doc.teamName, doc.department, doc.phone, memberNames].join(' ').toLowerCase();
         }
         return { doc: doc, searchable: searchable };
       })
@@ -271,9 +271,10 @@ document.addEventListener('DOMContentLoaded', function () {
       var tr = document.createElement('tr');
 
       if (currentTab === 'solo') {
+        var soloRoll = doc.rollNo ? '<br><small>Roll ' + escapeHtml(doc.rollNo) + '</small>' : '';
         tr.innerHTML =
           '<td class="cell-id">' + escapeHtml(doc.registrationId) + '</td>' +
-          '<td>' + escapeHtml(doc.name) + '</td>' +
+          '<td>' + escapeHtml(doc.name) + soloRoll + '</td>' +
           '<td>' + escapeHtml(doc.department) + '</td>' +
           '<td>' + escapeHtml(doc.year) + '</td>' +
           '<td>' + escapeHtml(doc.theme) + '</td>' +
@@ -281,11 +282,9 @@ document.addEventListener('DOMContentLoaded', function () {
           '<td>' + statusBadge(doc.status) + '</td>';
       } else {
         var members = doc.members || [];
-        var contact = members.length > 0
-          ? escapeHtml(members[0].name) + '<br><small>' + escapeHtml(members[0].phone) + '</small>'
-          : '-';
+        var contact = doc.phone ? escapeHtml(doc.phone) : '-';
         var memberInfo = members.map(function (m) {
-          return m.name + ' (' + m.year + ')';
+          return m.name + ' (' + m.year + (m.rollNo ? ', Roll ' + m.rollNo : '') + ')';
         }).join(', ');
         tr.innerHTML =
           '<td class="cell-id">' + escapeHtml(doc.registrationId) + '</td>' +
@@ -372,9 +371,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var headers;
     if (currentTab === 'solo') {
-      headers = ['Registration ID', 'Name', 'Phone', 'Department', 'Year', 'Theme', 'Status', 'Registered Date'];
+      headers = ['Registration ID', 'Name', 'Phone', 'Department', 'Year', 'Roll Number', 'Theme', 'Status', 'Registered Date'];
     } else {
-      headers = ['Registration ID', 'Team Name', 'Department', 'Theme', 'Members', 'Status', 'Registered Date'];
+      headers = ['Registration ID', 'Team Name', 'Department', 'Theme', 'Contact Phone', 'Members', 'Status', 'Registered Date'];
     }
 
     var lines = [headers.map(csvCell).join(',')];
@@ -388,19 +387,21 @@ document.addEventListener('DOMContentLoaded', function () {
           doc.phone,
           doc.department,
           doc.year,
+          doc.rollNo,
           doc.theme,
           doc.status,
           formatDate(doc.registeredAtDate)
         ];
       } else {
         var members = (doc.members || []).map(function (m) {
-          return m.name + ' (' + m.phone + ', ' + m.year + ')';
+          return m.name + ' (' + m.year + (m.rollNo ? ', Roll ' + m.rollNo : '') + ')';
         }).join(' | ');
         values = [
           doc.registrationId,
           doc.teamName,
           doc.department,
           doc.theme,
+          doc.phone,
           members,
           doc.status,
           formatDate(doc.registeredAtDate)

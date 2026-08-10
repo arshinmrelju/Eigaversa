@@ -111,7 +111,8 @@
     var membersHTML = '';
     if (isGroup && data.members && data.members.length > 0) {
       var items = data.members.map(function (m) {
-        return '<li><span>' + escapeHtml(m.name) + '</span><span class="ticket-member-year">' + escapeHtml(m.year || '') + '</span></li>';
+        var memberMeta = (m.rollNo ? 'Roll ' + m.rollNo + ' &bull; ' : '') + (m.year || '');
+        return '<li><span>' + escapeHtml(m.name) + '</span><span class="ticket-member-year">' + escapeHtml(memberMeta) + '</span></li>';
       }).join('');
       membersHTML =
         '<div class="ticket-members-box">' +
@@ -132,6 +133,10 @@
         '<div class="ticket-field">' +
           '<span class="ticket-label">Theme</span>' +
           '<span class="ticket-val"><span class="ticket-theme-badge">' + escapeHtml(themeLabel) + '</span></span>' +
+        '</div>' +
+        '<div class="ticket-field">' +
+          '<span class="ticket-label">Contact Phone</span>' +
+          '<span class="ticket-val">' + escapeHtml(data.phone) + '</span>' +
         '</div>'
       : '<div class="ticket-field full-width">' +
           '<span class="ticket-label">Participant Name</span>' +
@@ -144,6 +149,10 @@
         '<div class="ticket-field">' +
           '<span class="ticket-label">Year of Study</span>' +
           '<span class="ticket-val">' + escapeHtml(data.year) + '</span>' +
+        '</div>' +
+        '<div class="ticket-field">' +
+          '<span class="ticket-label">Roll Number</span>' +
+          '<span class="ticket-val">' + escapeHtml(data.rollNo) + '</span>' +
         '</div>' +
         '<div class="ticket-field">' +
           '<span class="ticket-label">Theme</span>' +

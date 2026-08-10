@@ -41,10 +41,10 @@
       <div class="pass-search-box">
         <p class="eyebrow">Official Admission Slip</p>
         <h1 style="font-size: clamp(1.8rem, 3vw, 2.4rem); margin-bottom: 8px;">Retrieve Entry Pass</h1>
-        <p style="color: var(--clr-text-muted);">Enter your Registration ID (e.g. <strong>EIG-S-001</strong> or <strong>EIG-G-002</strong>) to view, print, or download your official stage entry slip.</p>
+        <p style="color: var(--clr-text-muted);">Enter your Registration ID (e.g. <strong>EIG-S-001</strong> or <strong>EIG-G-002</strong>) or your phone number to view, print, or download your official stage entry slip.</p>
         
         <form id="pass-search-form" class="pass-search-form">
-          <input type="text" id="pass-id-input" class="pass-search-input" placeholder="e.g. EIG-S-001" autocomplete="off" required>
+          <input type="text" id="pass-id-input" class="pass-search-input" placeholder="e.g. EIG-S-001 or phone number" autocomplete="off" required>
           <button type="submit" class="btn btn-primary">Find Pass</button>
         </form>
         <p id="pass-status-msg" style="margin-top: 10px; font-size: 0.9rem;" hidden></p>
@@ -125,7 +125,7 @@
 
         fb.getRegistrationById(regId).then(function (record) {
           if (!record) {
-            setStatus('No entry pass found for Registration ID: ' + regId, true);
+            setStatus('No entry pass found for: ' + regId, true);
             return;
           }
 

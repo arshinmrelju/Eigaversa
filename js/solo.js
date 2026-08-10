@@ -12,6 +12,18 @@
   var phoneInput = document.getElementById('phone');
   var submitBtn = form.querySelector('button[type="submit"]');
 
+  /* --- Roll number options (1 to 100) --- */
+
+  var rollSelect = document.getElementById('roll-no');
+  if (rollSelect) {
+    for (var r = 1; r <= 100; r++) {
+      var rollOpt = document.createElement('option');
+      rollOpt.value = String(r);
+      rollOpt.textContent = String(r);
+      rollSelect.appendChild(rollOpt);
+    }
+  }
+
   /* --- Validation helpers --- */
 
   function validateField(input) {
@@ -133,6 +145,7 @@
       phone: form.querySelector('#phone').value.trim(),
       department: form.querySelector('#department').value,
       year: form.querySelector('#year-of-study').value,
+      rollNo: form.querySelector('#roll-no').value,
       theme: form.querySelector('#theme').value
     };
 

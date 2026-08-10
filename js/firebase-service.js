@@ -77,7 +77,7 @@ async function saveCounter(key, value) {
 
 /**
  * Save a solo registration.
- * @param {Object} data { name, phone, department, year, theme }
+ * @param {Object} data { name, phone, department, year, rollNo, theme }
  * @returns {Promise<Object|null>} { id, registrationId } or null on failure
  */
 async function saveSoloRegistration(data) {
@@ -91,6 +91,7 @@ async function saveSoloRegistration(data) {
       phone: data.phone || '',
       department: data.department || '',
       year: data.year || '',
+      rollNo: data.rollNo || '',
       theme: data.theme || '',
       status: 'pending',
       registeredAt: serverTimestamp()
@@ -106,7 +107,7 @@ async function saveSoloRegistration(data) {
 
 /**
  * Save a group registration.
- * @param {Object} data { teamName, department, theme, members: [{name, phone, year}] }
+ * @param {Object} data { teamName, department, phone, theme, members: [{name, rollNo, year}] }
  * @returns {Promise<Object|null>} { id, registrationId } or null on failure
  */
 async function saveGroupRegistration(data) {
@@ -118,6 +119,7 @@ async function saveGroupRegistration(data) {
       type: 'group',
       teamName: data.teamName || '',
       department: data.department || '',
+      phone: data.phone || '',
       theme: data.theme || '',
       members: data.members || [],
       memberCount: (data.members || []).length,
@@ -231,31 +233,57 @@ async function deleteRegistration(collectionName, id) {
   }
 }
 
-async function getRegistrationById(registrationId) {
-  if (!db || !registrationId) return null;
+function toRecord(docSnap) {
+  var data = docSnap.data();
+  var registeredAt = data.registeredAt && data.registeredAt.toDate ? data.registeredAt.toDate() : null;
+  return { id: docSnap.id, registeredAtDate: registeredAt, ...data };
+}
+
+async function getRegistrationById(queryInput) {
+  if (!db || !queryInput) return null;
   try {
-    var regId = registrationId.trim().toUpperCase();
-    var isGroup = regId.indexOf('EIG-G') === 0;
-    var collName = isGroup ? 'eigaversa_groups' : 'eigaversa_solo';
+    var input = String(queryInput).trim();
+    var regId = input.toUpperCase();
+    var isId = /^EIG-(S|G)-\d+$/i.test(input);
 
-    var q = query(collection(db, collName), where('registrationId', '==', regId));
-    var snap = await getDocs(q);
+    var results = [];
+    var soloColl = collection(db, 'eigaversa_solo');
+    var groupColl = collection(db, 'eigaversa_groups');
 
-    if (!snap.empty) {
-      var d = snap.docs[0].data();
-      var registeredAt = d.registeredAt && d.registeredAt.toDate ? d.registeredAt.toDate() : null;
-      return { id: snap.docs[0].id, registeredAtDate: registeredAt, ...d };
+    if (isId) {
+      var snaps = await Promise.all([
+        getDocs(query(soloColl, where('registrationId', '==', regId))),
+        getDocs(query(groupColl, where('registrationId', '==', regId)))
+      ]);
+      snaps.forEach(function (snap) {
+        snap.forEach(function (docSnap) { results.push(toRecord(docSnap)); });
+      });
+    } else {
+      var phoneVariants = [input, input.replace(/[\s-]/g, '')];
+      var seen = {};
+      for (var i = 0; i < phoneVariants.length; i++) {
+        var variant = phoneVariants[i];
+        if (!variant) continue;
+        var snapsByPhone = await Promise.all([
+          getDocs(query(soloColl, where('phone', '==', variant))),
+          getDocs(query(groupColl, where('phone', '==', variant)))
+        ]);
+        snapsByPhone.forEach(function (snap) {
+          snap.forEach(function (docSnap) {
+            if (!seen[docSnap.id]) {
+              seen[docSnap.id] = true;
+              results.push(toRecord(docSnap));
+            }
+          });
+        });
+      }
     }
 
-    var otherColl = isGroup ? 'eigaversa_solo' : 'eigaversa_groups';
-    var q2 = query(collection(db, otherColl), where('registrationId', '==', regId));
-    var snap2 = await getDocs(q2);
-    if (!snap2.empty) {
-      var d2 = snap2.docs[0].data();
-      var registeredAt2 = d2.registeredAt && d2.registeredAt.toDate ? d2.registeredAt.toDate() : null;
-      return { id: snap2.docs[0].id, registeredAtDate: registeredAt2, ...d2 };
-    }
-    return null;
+    if (results.length === 0) return null;
+    results.sort(function (a, b) {
+      return (b.registeredAtDate || 0) - (a.registeredAtDate || 0);
+    });
+    return results[0];
   } catch (e) {
     console.warn('Firestore getRegistrationById error:', e);
     return null;

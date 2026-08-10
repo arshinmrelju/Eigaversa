@@ -1273,3 +1273,143 @@ h3 {
   }
 }
 
+
+/* ==========================================================
+   Background Music — Overlay & Toggle
+   ========================================================== */
+
+/* Full-screen cinematic overlay */
+.music-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 11, 13, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.music-overlay--hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.music-overlay-card {
+  max-width: 420px;
+  width: calc(100% - 2rem);
+  padding: 2.5rem 2rem;
+  background: linear-gradient(160deg, #15161a 0%, #1b1d22 100%);
+  border: 1px solid var(--clr-border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.7);
+  text-align: center;
+  animation: overlayCardIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes overlayCardIn {
+  from { opacity: 0; transform: translateY(28px) scale(0.96); }
+  to   { opacity: 1; transform: none; }
+}
+
+.music-overlay-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1.25rem;
+  border-radius: 50%;
+  background: var(--clr-gold-soft);
+  border: 1px solid var(--clr-border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clr-gold);
+  animation: musicPulse 2.4s ease-in-out infinite;
+}
+
+.music-overlay-icon svg { width: 28px; height: 28px; }
+
+@keyframes musicPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(233, 195, 119, 0.35); }
+  50%       { box-shadow: 0 0 0 14px rgba(233, 195, 119, 0); }
+}
+
+.music-overlay-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--clr-gold);
+  margin-bottom: 0.6rem;
+  letter-spacing: 0.02em;
+}
+
+.music-overlay-desc {
+  font-size: 0.9rem;
+  color: var(--clr-text-muted);
+  line-height: 1.6;
+  margin-bottom: 1.75rem;
+}
+
+.music-overlay-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.music-overlay-actions .btn { width: 100%; max-width: 240px; }
+
+.music-skip-btn {
+  background: none;
+  border: none;
+  color: var(--clr-text-muted);
+  font-size: 0.82rem;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: color var(--transition);
+  padding: 0.25rem 0;
+}
+
+.music-skip-btn:hover { color: var(--clr-text); }
+
+/* Mute / unmute toggle */
+.music-toggle {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 1000;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--clr-border-strong);
+  background: rgba(21, 22, 26, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--clr-gold);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition), border-color var(--transition), transform 0.18s ease, box-shadow var(--transition);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+}
+
+.music-toggle:hover {
+  background: rgba(212, 162, 76, 0.15);
+  border-color: var(--clr-gold);
+  transform: scale(1.1);
+  box-shadow: 0 6px 24px rgba(233, 195, 119, 0.25);
+}
+
+.music-toggle:active { transform: scale(0.95); }
+
+.music-toggle svg {
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+
+.music-toggle .icon-sound-off { display: none; }
+.music-toggle.is-muted .icon-sound-on  { display: none; }
+.music-toggle.is-muted .icon-sound-off { display: block; color: var(--clr-text-muted); }
