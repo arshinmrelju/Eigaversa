@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Group registration for EIGAVERSA Movie Character Recreation.">
+  <title>Group Registration | EIGAVERSA</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/registration.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand" aria-label="Eigaversa home">
+        <img src="assets/Pazhassiraja_College_Pulpally_Logo.png" alt="Pazhassiraja College Pulpally" class="brand-logo">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-text">EIGAVERSA</span>
+      </a>
+      <nav class="site-nav" id="site-menu" aria-label="Primary navigation">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="solo.html">Solo</a></li>
+        </ul>
+      </nav>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="site-menu">
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="reg-main">
+    <section class="reg-hero">
+      <div class="container">
+        <p class="eyebrow">Team Entry</p>
+        <h1>Group Registration</h1>
+        <p>Build your cast. Register your team members and own the stage together.</p>
+      </div>
+    </section>
+
+    <section class="reg-section">
+      <div class="container reg-wrap">
+        <form id="group-form" class="reg-form" novalidate>
+          <div class="form-field">
+            <label for="team-name">Team Name <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="team-name" name="teamName" placeholder="Your team name" autocomplete="off" required>
+          </div>
+
+          <div class="form-field">
+            <label for="team-department">Department <span class="req" aria-hidden="true">*</span></label>
+            <div class="select-wrapper">
+              <select id="team-department" name="department" required>
+                <option value="" selected disabled>Select your department</option>
+                <option value="Department of Biochemistry">Department of Biochemistry</option>
+                <option value="Department of Commerce">Department of Commerce</option>
+                <option value="Department of Economics">Department of Economics</option>
+                <option value="Department of English">Department of English</option>
+                <option value="Department of History">Department of History</option>
+                <option value="Department of Journalism and Mass Communication">Department of Journalism and Mass Communication</option>
+                <option value="Department of Microbiology">Department of Microbiology</option>
+                <option value="Department of Travel and Tourism">Department of Travel and Tourism</option>
+              </select>
+              <span class="select-arrow" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="team-theme">Theme <span class="req" aria-hidden="true">*</span></label>
+            <div class="select-wrapper">
+              <select id="team-theme" name="theme" required>
+                <option value="" selected disabled>Select a theme</option>
+<option value="romance">Romance</option>
+                <option value="horror-comedy">Horror Comedy</option>
+              </select>
+              <span class="select-arrow" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="members-head">
+            <h2>Team Members</h2>
+            <p>Minimum <strong>2</strong> members. All members share the selected department.</p>
+          </div>
+
+          <div id="members-container" class="members-container"></div>
+
+          <div class="members-actions">
+            <button type="button" id="add-member-btn" class="btn btn-outline btn-block">+ Add Member</button>
+            <p id="members-limit-msg" class="field-hint" hidden>Member limit reached (10 members).</p>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-block">Submit Registration</button>
+            <a href="index.html" class="btn btn-ghost btn-block">Back to Home</a>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <img src="assets/Pazhassiraja_College_Pulpally_Logo.png" alt="Pazhassiraja College Pulpally" class="footer-logo">
+      <p class="footer-copy">&copy; <span id="footer-year">2026</span> EIGAVERSA &bull; <strong>Movie Character Recreation</strong></p>
+      <p class="footer-built-by">Powered by <a class="footer-brand-link" href="https://graphiccity.in" target="_blank" rel="noopener noreferrer"><img src="assets/graphiccity-logo.svg" alt="GraphicCity" class="footer-brand-logo"><strong>GraphicCity</strong></a></p>
+    </div>
+  </footer>
+
+  <script src="js/firebase-config.js"></script>
+  <script type="module" src="js/firebase-service.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/group.js"></script>
+</body>
+</html>
+
+
+
+
+

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Admin dashboard for EIGAVERSA Movie Character Recreation registrations.">
+  <title>Admin | EIGAVERSA</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+
+  <!-- Login view -->
+  <main id="login-view" class="admin-login">
+    <div class="admin-login-card">
+      <img src="assets/Pazhassiraja_College_Pulpally_Logo.png" alt="Pazhassiraja College Pulpally" class="login-logo">
+      <span class="login-brand-mark" aria-hidden="true"></span>
+      <h1>EIGAVERSA Admin</h1>
+      <p class="login-sub">Restricted access. Enter the admin access code to continue.</p>
+
+      <form id="login-form" novalidate>
+        <div class="login-field">
+          <label for="admin-code">Access Code</label>
+          <input type="password" id="admin-code" name="code" placeholder="Enter access code" autocomplete="off" required>
+        </div>
+        <button type="submit" id="login-btn" class="btn btn-primary btn-block">Sign In</button>
+        <p id="login-msg" class="login-msg" role="status" hidden></p>
+      </form>
+
+      <a href="index.html" class="login-back">Back to Home</a>
+    </div>
+  </main>
+
+  <!-- Dashboard view -->
+  <div id="dashboard-view" class="admin-dashboard" hidden>
+
+    <header class="admin-header">
+      <div class="container admin-header-inner">
+        <div class="admin-brand">
+          <img src="assets/Pazhassiraja_College_Pulpally_Logo.png" alt="Pazhassiraja College Pulpally" class="admin-header-logo">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <div class="admin-brand-text">
+            <h1>EIGAVERSA</h1>
+            <span>Admin Dashboard</span>
+          </div>
+        </div>
+        <div class="admin-header-actions">
+          <button id="export-csv-btn" class="btn btn-outline">Export CSV</button>
+          <button id="logout-btn" class="btn btn-ghost">Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin-content">
+      <div class="container">
+
+        <section class="stat-grid">
+          <article class="stat-card">
+            <span class="stat-value" id="stat-total">0</span>
+            <span class="stat-label">Total Registrations</span>
+          </article>
+          <article class="stat-card">
+            <span class="stat-value" id="stat-solo">0</span>
+            <span class="stat-label">Solo Entries</span>
+          </article>
+          <article class="stat-card">
+            <span class="stat-value" id="stat-groups">0</span>
+            <span class="stat-label">Group Entries</span>
+          </article>
+          <article class="stat-card">
+            <span class="stat-value" id="stat-participants">0</span>
+            <span class="stat-label">Total Participants</span>
+          </article>
+        </section>
+
+        <section class="admin-panel">
+          <div class="admin-panel-head">
+            <div class="admin-tabs" role="tablist">
+              <button type="button" class="admin-tab is-active" id="tab-solo" data-tab="solo">Solo Registrations</button>
+              <button type="button" class="admin-tab" id="tab-groups" data-tab="groups">Group Registrations</button>
+            </div>
+            <div class="admin-count" id="row-count">0 shown</div>
+          </div>
+
+          <div class="admin-filters">
+            <div class="filter-field filter-search">
+              <input type="search" id="filter-search" placeholder="Search name, team, ID, phone..." aria-label="Search">
+            </div>
+            <div class="filter-field">
+              <select id="filter-department" aria-label="Filter by department">
+                <option value="">All Departments</option>
+              </select>
+            </div>
+            <div class="filter-field">
+              <select id="filter-theme" aria-label="Filter by theme">
+                <option value="">All Themes</option>
+                <option value="Romance">Romance</option>
+                <option value="horror-comedy">Horror Comedy</option>
+              </select>
+            </div>
+            <div class="filter-field">
+              <select id="filter-status" aria-label="Filter by status">
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th id="th-entity">Name</th>
+                  <th>Department</th>
+                  <th id="th-year">Year</th>
+                  <th>Theme</th>
+                  <th id="th-contact">Phone</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="table-body"></tbody>
+            </table>
+            <p id="empty-state" class="empty-state" hidden>No registrations found.</p>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p class="footer-copy">&copy; <span id="footer-year">2026</span> EIGAVERSA &bull; <strong>Movie Character Recreation</strong></p>
+        <p class="footer-built-by">Powered by <a class="footer-brand-link" href="https://graphiccity.in" target="_blank" rel="noopener noreferrer"><img src="assets/graphiccity-logo.svg" alt="GraphicCity" class="footer-brand-logo"><strong>GraphicCity</strong></a></p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="js/firebase-config.js"></script>
+  <script type="module" src="js/firebase-service.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

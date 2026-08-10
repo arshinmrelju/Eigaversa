@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Solo registration for EIGAVERSA Movie Character Recreation.">
+  <title>Solo Registration | EIGAVERSA</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/registration.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand" aria-label="Eigaversa home">
+        <img src="assets/Pazhassiraja_College_Pulpally_Logo.png" alt="Pazhassiraja College Pulpally" class="brand-logo">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-text">EIGAVERSA</span>
+      </a>
+      <nav class="site-nav" id="site-menu" aria-label="Primary navigation">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="group.html">Group</a></li>
+        </ul>
+      </nav>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="site-menu">
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="reg-main">
+    <section class="reg-hero">
+      <div class="container">
+        <p class="eyebrow">Solo Entry</p>
+        <h1>Solo Registration</h1>
+        <p>Lights are on you. Tell us who you are and claim your solo moment.</p>
+      </div>
+    </section>
+
+    <section class="reg-section">
+      <div class="container reg-wrap">
+        <form id="solo-form" class="reg-form" novalidate>
+          <div class="form-field">
+            <label for="name">Full Name <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="name" name="name" placeholder="Your full name" autocomplete="name" required>
+          </div>
+
+          <div class="form-field">
+            <label for="phone">Phone Number <span class="req" aria-hidden="true">*</span></label>
+            <input type="tel" id="phone" name="phone" placeholder="e.g. 98XXXXXXXX" autocomplete="tel" required>
+          </div>
+
+          <div class="form-field">
+            <label for="department">Department <span class="req" aria-hidden="true">*</span></label>
+            <div class="select-wrapper">
+              <select id="department" name="department" required>
+                <option value="" selected disabled>Select your department</option>
+                <option value="Department of Biochemistry">Department of Biochemistry</option>
+                <option value="Department of Commerce">Department of Commerce</option>
+                <option value="Department of Economics">Department of Economics</option>
+                <option value="Department of English">Department of English</option>
+                <option value="Department of History">Department of History</option>
+                <option value="Department of Journalism and Mass Communication">Department of Journalism and Mass Communication</option>
+                <option value="Department of Microbiology">Department of Microbiology</option>
+                <option value="Department of Travel and Tourism">Department of Travel and Tourism</option>
+              </select>
+              <span class="select-arrow" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="year-of-study">Year of Studying <span class="req" aria-hidden="true">*</span></label>
+            <div class="select-wrapper">
+              <select id="year-of-study" name="year" required>
+                <option value="" selected disabled>Select your year of study</option>
+                <option value="1st Year">1st Year</option>
+                <option value="2nd Year">2nd Year</option>
+                <option value="3rd Year">3rd Year</option>
+                <option value="1st Year (PG)">1st Year (PG)</option>
+                <option value="2nd Year (PG)">2nd Year (PG)</option>
+              </select>
+              <span class="select-arrow" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="theme">Theme <span class="req" aria-hidden="true">*</span></label>
+            <div class="select-wrapper">
+              <select id="theme" name="theme" required>
+                <option value="" selected disabled>Select a theme</option>
+<option value="romance">Romance</option>
+                <option value="horror-comedy">Horror Comedy</option>
+              </select>
+              <span class="select-arrow" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-block">Submit Registration</button>
+            <a href="index.html" class="btn btn-ghost btn-block">Back to Home</a>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <img src="assets/Pazhassiraja_College_Pulpally_Logo.png" alt="Pazhassiraja College Pulpally" class="footer-logo">
+      <p class="footer-copy">&copy; <span id="footer-year">2026</span> EIGAVERSA &bull; <strong>Movie Character Recreation</strong></p>
+      <p class="footer-built-by">Powered by <a class="footer-brand-link" href="https://graphiccity.in" target="_blank" rel="noopener noreferrer"><img src="assets/graphiccity-logo.svg" alt="GraphicCity" class="footer-brand-logo"><strong>GraphicCity</strong></a></p>
+    </div>
+  </footer>
+
+  <script src="js/firebase-config.js"></script>
+  <script type="module" src="js/firebase-service.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/solo.js"></script>
+</body>
+</html>
+
+
+
+
+

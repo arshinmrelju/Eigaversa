@@ -1,0 +1,311 @@
+/* ==========================================================
+   EIGAVERSA — Registration Stylesheet
+   Solo + Group registration forms (cinematic theme).
+   ========================================================== */
+
+.reg-main {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 68px);
+}
+
+/* ---------- Registration hero ---------- */
+.reg-hero {
+  padding-block: 56px 6px;
+  text-align: center;
+}
+
+.reg-hero h1 {
+  font-size: clamp(2rem, 5vw, 2.9rem);
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+
+.reg-hero p {
+  color: var(--clr-text-muted);
+  max-width: 540px;
+  margin-inline: auto;
+}
+
+/* ---------- Form section ---------- */
+.reg-section {
+  padding-block: 34px 70px;
+  flex: 1;
+}
+
+.reg-wrap {
+  max-width: 640px;
+}
+
+.reg-form {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  padding: 36px 32px;
+  box-shadow: var(--shadow-card);
+}
+
+.form-field {
+  margin-bottom: 22px;
+}
+
+.form-field label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.86rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  color: var(--clr-text);
+}
+
+.req {
+  color: var(--clr-error);
+  font-weight: 700;
+}
+
+.form-field input {
+  width: 100%;
+  padding: 14px 16px;
+  min-height: 48px;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--clr-text);
+  background: var(--clr-bg-soft);
+  border: 1.5px solid var(--clr-border-strong);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.select-wrapper select {
+  width: 100%;
+  padding: 14px 16px;
+  min-height: 48px;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--clr-text);
+  background: var(--clr-bg-soft);
+  border: 1.5px solid var(--clr-border-strong);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  padding-right: 3rem;
+}
+
+.select-wrapper select option {
+  background-color: #1b1d22;
+  color: var(--clr-text);
+}
+
+.select-arrow {
+  position: absolute;
+  right: 1.1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--clr-gold);
+  pointer-events: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-field input::placeholder {
+  color: #6d6b64;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.select-wrapper select:focus {
+  outline: none;
+  border-color: var(--clr-gold);
+  box-shadow: 0 0 0 3px rgba(212, 162, 76, 0.18);
+}
+
+.select-wrapper select:hover {
+  border-color: var(--clr-border-strong);
+  box-shadow: 0 0 0 3px rgba(212, 162, 76, 0.1);
+}
+
+.form-field.has-error input,
+.form-field.has-error select,
+.select-wrapper.has-error select {
+  border-color: var(--clr-error);
+  box-shadow: 0 0 0 3px rgba(224, 96, 77, 0.18);
+}
+
+.field-error {
+  display: none;
+  margin-top: 6px;
+  font-size: 0.82rem;
+  color: var(--clr-error);
+}
+
+.form-field.has-error .field-error {
+  display: block;
+}
+
+.field-hint {
+  font-size: 0.85rem;
+  color: var(--clr-text-muted);
+}
+
+/* ---------- Group members ---------- */
+.members-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 20px;
+  padding-top: 10px;
+  border-top: 1px solid var(--clr-border);
+}
+
+.members-head h2 {
+  font-size: 1.15rem;
+}
+
+.members-head p {
+  color: var(--clr-text-muted);
+  font-size: 0.85rem;
+}
+
+.members-container {
+  display: grid;
+  gap: 22px;
+  margin-bottom: 8px;
+}
+
+.member-card {
+  position: relative;
+  background: var(--clr-bg-soft);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: 20px 18px 6px;
+}
+
+.member-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.member-card-head h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--clr-gold);
+}
+
+.remove-member-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1.5px solid var(--clr-border-strong);
+  color: var(--clr-text-muted);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 13px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition), background-color var(--transition);
+}
+
+.remove-member-btn:hover {
+  color: var(--clr-error);
+  border-color: var(--clr-error);
+  background: rgba(224, 96, 77, 0.1);
+}
+
+.members-actions {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 26px;
+}
+
+.members-actions .field-hint {
+  text-align: center;
+}
+
+/* ---------- Form actions ---------- */
+.form-actions {
+  display: grid;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+/* ---------- Success message ---------- */
+.form-success {
+  display: none;
+  background: rgba(127, 208, 163, 0.1);
+  border: 1px solid rgba(127, 208, 163, 0.35);
+  color: var(--clr-success);
+  border-radius: var(--radius-sm);
+  padding: 13px 16px;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.form-success.is-visible {
+  display: block;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 600px) {
+  .reg-form {
+    padding: 26px 18px;
+  }
+
+  .members-head {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .form-field {
+    margin-bottom: 20px;
+  }
+
+  .form-field input,
+  .form-field select,
+  .select-wrapper select {
+    min-height: 52px;
+    font-size: 16px;
+    padding: 14px 16px;
+  }
+
+  .form-actions .btn {
+    min-height: 52px;
+  }
+
+  .member-card {
+    padding: 18px 14px 4px;
+  }
+
+  .member-card-head {
+    align-items: center;
+  }
+
+  .remove-member-btn {
+    padding: 10px 14px;
+    font-size: 0.76rem;
+  }
+
+  .add-member-btn,
+  #add-member-btn {
+    min-height: 52px;
+  }
+}

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="EIGAVERSA - Movie Character Recreation. Register solo or as a group and bring your favorite movie characters to life.">
+  <title>EIGAVERSA | Movie Character Recreation</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand" aria-label="Eigaversa home">
+        <img src="assets/Pazhassiraja_College_Pulpally_Logo.png" alt="Pazhassiraja College Pulpally" class="brand-logo">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-text">EIGAVERSA</span>
+      </a>
+      <nav class="site-nav" id="site-menu" aria-label="Primary navigation">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="solo.html">Solo</a></li>
+          <li><a href="group.html">Group</a></li>
+        </ul>
+      </nav>
+
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="site-menu">
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+
+    <section id="home" class="hero">
+      <div class="hero-backdrop" aria-hidden="true"></div>
+      <span class="hero-watermark" aria-hidden="true">CINEMA</span>
+      <span class="film-strip film-strip--left" aria-hidden="true"></span>
+      <span class="film-strip film-strip--right" aria-hidden="true"></span>
+
+      <div class="container hero-layout">
+        <div class="hero-copy">
+          <span class="hero-kicker reveal">
+            <span class="hero-kicker-dot" aria-hidden="true"></span>
+            Dept. of English
+          </span>
+          <h1 class="hero-title reveal">
+            EIGAVERSA
+            <span class="hero-subtitle">Movie Character Recreation</span>
+          </h1>
+
+          <!-- Desktop intro paragraph -->
+          <p class="hero-intro reveal">
+            Lights dim. Cameras roll. The screen comes alive. Eigaversa is the official
+            movie character recreation event — register solo or as a team, choose your genre,
+            and bring an icon of cinema to life on stage.
+          </p>
+
+          <!-- Mobile-only cinematic block (hidden on desktop) -->
+          <div class="hero-mobile-cinematic reveal">
+            <div class="hero-genre-chips">
+              <span class="genre-chip">
+                <svg class="chip-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                </svg>
+                Romance
+              </span>
+              <span class="genre-chip">
+                <svg class="chip-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 2a8 8 0 0 0-8 8v12l3-3 2.5 2.5L12 19l2.5 2.5L17 19l3 3V10a8 8 0 0 0-8-8z"/>
+                  <circle cx="9" cy="9" r="1" fill="currentColor"/>
+                  <circle cx="15" cy="9" r="1" fill="currentColor"/>
+                </svg>
+                <svg class="chip-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                  <line x1="9" y1="9" x2="9.01" y2="9"/>
+                  <line x1="15" y1="9" x2="15.01" y2="9"/>
+                </svg>
+                Horror Comedy
+              </span>
+            </div>
+          </div>
+
+          <div class="hero-actions reveal">
+            <a href="solo.html" class="btn btn-primary">Solo Registration</a>
+            <a href="group.html" class="btn btn-outline">Group Registration</a>
+          </div>
+        </div>
+
+        <div class="hero-poster reveal" aria-hidden="true">
+          <div class="poster-card">
+            <span class="poster-top">Pazhassiraja College Pulpally</span>
+            <span class="poster-mark" aria-hidden="true"></span>
+            <span class="poster-title">EIGAVERSA</span>
+            <span class="poster-subtitle">Movie Character Recreation</span>
+            <span class="poster-rule" aria-hidden="true"></span>
+            <span class="poster-genres">Romance &middot; Horror Comedy</span>
+          </div>
+          <span class="poster-glow" aria-hidden="true"></span>
+        </div>
+      </div>
+
+      <span class="hero-scroll" aria-hidden="true"></span>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <img src="assets/Pazhassiraja_College_Pulpally_Logo.png" alt="Pazhassiraja College Pulpally" class="footer-logo">
+      <p class="footer-copy">&copy; <span id="footer-year">2026</span> EIGAVERSA &bull; <strong>Movie Character Recreation</strong></p>
+      <p class="footer-built-by">Powered by <a class="footer-brand-link" href="https://graphiccity.in" target="_blank" rel="noopener noreferrer"><img src="assets/graphiccity-logo.svg" alt="GraphicCity" class="footer-brand-logo"><strong>GraphicCity</strong></a></p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
