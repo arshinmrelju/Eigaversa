@@ -273,13 +273,13 @@ document.addEventListener('DOMContentLoaded', function () {
       if (currentTab === 'solo') {
         var soloRoll = doc.rollNo ? '<br><small>Roll ' + escapeHtml(doc.rollNo) + '</small>' : '';
         tr.innerHTML =
-          '<td class="cell-id">' + escapeHtml(doc.registrationId) + '</td>' +
-          '<td>' + escapeHtml(doc.name) + soloRoll + '</td>' +
-          '<td>' + escapeHtml(doc.department) + '</td>' +
-          '<td>' + escapeHtml(doc.year) + '</td>' +
-          '<td>' + escapeHtml(doc.theme) + '</td>' +
-          '<td>' + escapeHtml(doc.phone) + '</td>' +
-          '<td>' + statusBadge(doc.status) + '</td>';
+          '<td class="cell-id" data-label="ID"><span class="cell-value">' + escapeHtml(doc.registrationId) + '</span></td>' +
+          '<td data-label="Name"><span class="cell-value">' + escapeHtml(doc.name) + soloRoll + '</span></td>' +
+          '<td data-label="Department"><span class="cell-value">' + escapeHtml(doc.department) + '</span></td>' +
+          '<td data-label="Year"><span class="cell-value">' + escapeHtml(doc.year) + '</span></td>' +
+          '<td data-label="Theme"><span class="cell-value">' + escapeHtml(doc.theme) + '</span></td>' +
+          '<td data-label="Phone"><span class="cell-value">' + escapeHtml(doc.phone) + '</span></td>' +
+          '<td data-label="Status"><span class="cell-value">' + statusBadge(doc.status) + '</span></td>';
       } else {
         var members = doc.members || [];
         var contact = doc.phone ? escapeHtml(doc.phone) : '-';
@@ -287,17 +287,18 @@ document.addEventListener('DOMContentLoaded', function () {
           return m.name + ' (' + m.year + (m.rollNo ? ', Roll ' + m.rollNo : '') + ')';
         }).join(', ');
         tr.innerHTML =
-          '<td class="cell-id">' + escapeHtml(doc.registrationId) + '</td>' +
-          '<td>' + escapeHtml(doc.teamName) + '<br><small>' + escapeHtml(memberInfo) + '</small></td>' +
-          '<td>' + escapeHtml(doc.department) + '</td>' +
-          '<td>' + (doc.memberCount || members.length) + '</td>' +
-          '<td>' + escapeHtml(doc.theme) + '</td>' +
-          '<td>' + contact + '</td>' +
-          '<td>' + statusBadge(doc.status) + '</td>';
+          '<td class="cell-id" data-label="ID"><span class="cell-value">' + escapeHtml(doc.registrationId) + '</span></td>' +
+          '<td data-label="Team Name"><span class="cell-value">' + escapeHtml(doc.teamName) + '<br><small>' + escapeHtml(memberInfo) + '</small></span></td>' +
+          '<td data-label="Department"><span class="cell-value">' + escapeHtml(doc.department) + '</span></td>' +
+          '<td data-label="Members"><span class="cell-value">' + (doc.memberCount || members.length) + '</span></td>' +
+          '<td data-label="Theme"><span class="cell-value">' + escapeHtml(doc.theme) + '</span></td>' +
+          '<td data-label="Contact"><span class="cell-value">' + contact + '</span></td>' +
+          '<td data-label="Status"><span class="cell-value">' + statusBadge(doc.status) + '</span></td>';
       }
 
       var actionsTd = document.createElement('td');
       actionsTd.className = 'cell-actions';
+      actionsTd.setAttribute('data-label', 'Actions');
 
       var statusSelect = document.createElement('select');
       statusSelect.className = 'status-select';

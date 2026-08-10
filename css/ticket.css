@@ -87,6 +87,14 @@
   right: 0;
   height: 4px;
   background: linear-gradient(90deg, #b9893a, #e9c377, #d4a24c, #e9c377, #b9893a);
+  background-size: 200% 100%;
+  animation: ticket-bar-shimmer 5s linear infinite;
+  z-index: 1;
+}
+
+@keyframes ticket-bar-shimmer {
+  0%   { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
 }
 
 /* Watermark */
@@ -106,12 +114,31 @@
 
 /* Header Section */
 .ticket-header {
+  position: relative;
+  overflow: hidden;
   padding: 24px 28px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid rgba(233, 195, 119, 0.12);
   background: rgba(0, 0, 0, 0.2);
+}
+
+.ticket-header::after {
+  content: "";
+  position: absolute;
+  inset: -25% -15%;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 55% 90% at 18% 0%, rgba(233, 195, 119, 0.13), transparent 60%),
+    radial-gradient(ellipse 45% 90% at 88% 0%, rgba(150, 45, 65, 0.1), transparent 60%);
+  pointer-events: none;
+}
+
+.ticket-brand,
+.ticket-badge-pill {
+  position: relative;
+  z-index: 1;
 }
 
 .ticket-brand {
@@ -156,16 +183,17 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  background: rgba(212, 162, 76, 0.12);
+  background: linear-gradient(135deg, rgba(212, 162, 76, 0.24), rgba(212, 162, 76, 0.08));
   color: var(--clr-gold, #e9c377);
-  border: 1px solid rgba(233, 195, 119, 0.3);
-  box-shadow: 0 0 12px rgba(212, 162, 76, 0.15);
+  border: 1px solid rgba(233, 195, 119, 0.4);
+  box-shadow: 0 0 18px rgba(212, 162, 76, 0.22), inset 0 0 12px rgba(233, 195, 119, 0.06);
 }
 
 .ticket-badge-pill.is-group {
-  background: rgba(127, 208, 163, 0.12);
+  background: linear-gradient(135deg, rgba(127, 208, 163, 0.22), rgba(127, 208, 163, 0.08));
   color: #7fd0a3;
-  border-color: rgba(127, 208, 163, 0.3);
+  border-color: rgba(127, 208, 163, 0.4);
+  box-shadow: 0 0 18px rgba(127, 208, 163, 0.18), inset 0 0 12px rgba(127, 208, 163, 0.06);
 }
 
 .ticket-badge-dot {
@@ -199,12 +227,13 @@
   font-weight: 700;
   letter-spacing: 0.15em;
   color: #ffffff;
-  background: rgba(212, 162, 76, 0.15);
-  border: 1px solid rgba(233, 195, 119, 0.4);
+  background: linear-gradient(135deg, rgba(212, 162, 76, 0.22), rgba(212, 162, 76, 0.08));
+  border: 1px solid rgba(233, 195, 119, 0.5);
   padding: 4px 14px;
   border-radius: 6px;
   margin-bottom: 16px;
-  text-shadow: 0 0 10px rgba(233, 195, 119, 0.3);
+  text-shadow: 0 0 14px rgba(233, 195, 119, 0.5);
+  box-shadow: 0 0 20px rgba(212, 162, 76, 0.16), inset 0 0 14px rgba(233, 195, 119, 0.07);
 }
 
 /* Fields Grid */
@@ -251,9 +280,10 @@
   font-size: 0.8rem;
   font-weight: 600;
   text-transform: capitalize;
-  background: rgba(233, 195, 119, 0.15);
+  background: linear-gradient(135deg, rgba(233, 195, 119, 0.25), rgba(212, 162, 76, 0.12));
   color: var(--clr-gold, #e9c377);
-  border: 1px solid rgba(233, 195, 119, 0.3);
+  border: 1px solid rgba(233, 195, 119, 0.4);
+  box-shadow: 0 0 12px rgba(233, 195, 119, 0.15);
 }
 
 /* Members List for Groups */
@@ -271,6 +301,8 @@
   letter-spacing: 0.08em;
   color: var(--clr-gold, #e9c377);
   margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(233, 195, 119, 0.18);
   display: flex;
   justify-content: space-between;
 }
@@ -291,6 +323,11 @@
   justify-content: space-between;
   padding-bottom: 4px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ticket-members-list li span:first-child {
+  font-weight: 600;
+  color: #efece4;
 }
 
 .ticket-members-list li:last-child {
@@ -327,8 +364,10 @@
 .ticket-qr-container {
   background: #ffffff;
   padding: 10px;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(233, 195, 119, 0.35), 0 0 24px rgba(233, 195, 119, 0.14);
+  outline: 1px dashed rgba(233, 195, 119, 0.4);
+  outline-offset: 4px;
   display: inline-block;
   margin-bottom: 10px;
 }
@@ -392,11 +431,23 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  gap: 5px;
+}
+
+.ticket-barcode-wrap::before {
+  content: "EIGAVERSA • OFFICIAL ADMIT";
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clr-gold, #e9c377);
+  opacity: 0.75;
 }
 
 .ticket-barcode {
   height: 32px;
   width: 180px;
+  border-radius: 2px;
   background-image: repeating-linear-gradient(
     90deg,
     #ffffff 0, #ffffff 2px,
@@ -407,7 +458,8 @@
     transparent 10px, transparent 13px,
     #ffffff 13px, #ffffff 17px
   );
-  opacity: 0.85;
+  opacity: 0.95;
+  box-shadow: 0 0 14px rgba(233, 195, 119, 0.1);
 }
 
 .ticket-venue-info {
@@ -531,6 +583,182 @@
 .pass-search-input:focus {
   border-color: var(--clr-gold, #e9c377);
   box-shadow: 0 0 12px rgba(233, 195, 119, 0.2);
+}
+
+/* ---------- Mobile Ticket & Pass Optimization ---------- */
+@media (max-width: 560px) {
+  .ticket-modal-overlay {
+    padding: 12px;
+    align-items: flex-start;
+  }
+
+  .ticket-modal-close {
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+    background: rgba(10, 11, 13, 0.9);
+  }
+
+  .ticket-card {
+    border-radius: 12px;
+  }
+
+  .ticket-header {
+    padding: 16px 16px 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .ticket-brand-text h2 {
+    font-size: 1.15rem;
+  }
+
+  .ticket-body {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .ticket-id-tag {
+    font-size: 1.05rem;
+  }
+
+  .ticket-footer {
+    padding: 14px 16px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .ticket-venue-info {
+    text-align: left;
+  }
+
+  .pass-page-wrap {
+    padding-block: 24px;
+    min-height: calc(100vh - 140px);
+  }
+
+  .pass-search-form {
+    flex-direction: column;
+  }
+
+  .pass-search-form .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 620px) {
+  .ticket-header {
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .ticket-brand {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .ticket-id-tag {
+    display: block;
+    width: fit-content;
+    margin-inline: auto;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .ticket-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .ticket-field.full-width {
+    grid-column: span 1;
+  }
+
+  .ticket-field {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 14px;
+    padding: 9px 0;
+    border-bottom: 1px dashed rgba(233, 195, 119, 0.12);
+  }
+
+  .ticket-field:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .ticket-label {
+    margin: 0;
+    flex-shrink: 0;
+  }
+
+  .ticket-val {
+    flex: 1;
+    text-align: right;
+    font-size: 0.95rem;
+  }
+
+  .ticket-val-highlight {
+    font-size: 1rem;
+  }
+
+  .ticket-members-box {
+    text-align: left;
+  }
+
+  .ticket-members-list li {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .ticket-members-list li span:first-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+
+  .ticket-member-year {
+    flex-shrink: 0;
+    text-align: right;
+    font-size: 0.78rem;
+  }
+
+  .ticket-footer {
+    align-items: center;
+    text-align: center;
+  }
+
+  .ticket-barcode-wrap {
+    align-items: center;
+  }
+
+  .ticket-venue-info {
+    text-align: center;
+  }
+
+  .ticket-qr-container svg,
+  .ticket-qr-canvas {
+    width: 104px;
+    height: 104px;
+  }
+
+  .ticket-actions-bar {
+    gap: 8px;
+  }
+
+  .ticket-btn {
+    flex: 1 1 44%;
+    justify-content: center;
+    padding: 10px 12px;
+    font-size: 0.82rem;
+  }
 }
 
 /* ---------- Print Media Optimization ---------- */

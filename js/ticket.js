@@ -7,9 +7,32 @@
 (function () {
   'use strict';
 
-  /* ---------- Lightweight Pure JS QR Code Generator ---------- */
-  /* Generates SVG string for QR Code encoding text payload */
+  /* ---------- QR Code Generator ---------- */
+  /* Uses qrcode-generator (CDN) for real scannable QR codes,
+     falls back to a decorative matrix when the library is unavailable. */
   function generateQRCodeSVG(text, size) {
+    size = size || 120;
+    if (typeof window.qrcode === 'function') {
+      try {
+        if (window.qrcode.stringToBytesFuncs && window.qrcode.stringToBytesFuncs['UTF-8']) {
+          window.qrcode.stringToBytes = window.qrcode.stringToBytesFuncs['UTF-8'];
+        }
+        var qr = window.qrcode(0, 'M');
+        qr.addData(text);
+        qr.make();
+        var qrSvg = qr.createSvgTag({ cellSize: 2, margin: 4, scalable: true });
+        // Add explicit dimensions so the SVG renders correctly when the
+        // ticket is serialized into the PNG export (no external CSS there).
+        qrSvg = qrSvg.replace('<svg ', '<svg width="' + size + '" height="' + size + '" ');
+        return qrSvg;
+      } catch (e) {
+        console.warn('EIGAVERSA: real QR generation failed, using fallback.', e);
+      }
+    }
+    return fallbackQRCodeSVG(text, size);
+  }
+
+  function fallbackQRCodeSVG(text, size) {
     size = size || 120;
     
     // Convert text to bit pattern hash for SVG grid generation

@@ -47,6 +47,10 @@
           </div>
         </div>
         <div class="admin-header-actions">
+          <button id="scan-qr-btn" class="btn btn-primary" aria-label="Scan entry pass QR code">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><rect x="7" y="7" width="3" height="3"></rect><rect x="14" y="7" width="3" height="3"></rect><rect x="7" y="14" width="3" height="3"></rect><rect x="14" y="14" width="3" height="3"></rect></svg>
+            Scan QR
+          </button>
           <button id="export-csv-btn" class="btn btn-outline">Export CSV</button>
           <button id="logout-btn" class="btn btn-ghost">Logout</button>
         </div>
@@ -58,20 +62,40 @@
 
         <section class="stat-grid">
           <article class="stat-card">
+            <div class="stat-card-head">
+              <span class="stat-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+              </span>
+              <span class="stat-label">Total Registrations</span>
+            </div>
             <span class="stat-value" id="stat-total">0</span>
-            <span class="stat-label">Total Registrations</span>
           </article>
           <article class="stat-card">
+            <div class="stat-card-head">
+              <span class="stat-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              </span>
+              <span class="stat-label">Solo Entries</span>
+            </div>
             <span class="stat-value" id="stat-solo">0</span>
-            <span class="stat-label">Solo Entries</span>
           </article>
           <article class="stat-card">
+            <div class="stat-card-head">
+              <span class="stat-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              </span>
+              <span class="stat-label">Group Entries</span>
+            </div>
             <span class="stat-value" id="stat-groups">0</span>
-            <span class="stat-label">Group Entries</span>
           </article>
           <article class="stat-card">
+            <div class="stat-card-head">
+              <span class="stat-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+              </span>
+              <span class="stat-label">Total Participants</span>
+            </div>
             <span class="stat-value" id="stat-participants">0</span>
-            <span class="stat-label">Total Participants</span>
           </article>
         </section>
 
@@ -145,7 +169,10 @@
   <script src="js/firebase-config.js"></script>
   <script type="module" src="js/firebase-service.js"></script>
   <script src="js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
   <script src="js/ticket.js"></script>
+  <script src="js/scanner.js"></script>
   <script src="js/admin.js"></script>
 </body>
 </html>
