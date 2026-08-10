@@ -5,6 +5,13 @@
    ========================================================== */
 
 /* ---------- Modal Overlay ---------- */
+.ticket-modal-overlay:not(.is-active) {
+  display: none !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
 .ticket-modal-overlay {
   position: fixed;
   inset: 0;
@@ -23,8 +30,10 @@
 }
 
 .ticket-modal-overlay.is-active {
-  opacity: 1;
-  visibility: visible;
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
 }
 
 .ticket-modal-dialog {

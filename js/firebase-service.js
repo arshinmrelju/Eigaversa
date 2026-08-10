@@ -35,8 +35,9 @@ if (hasValidConfig()) {
   db = getFirestore(app);
 }
 
-/* ---------- Registration ID generator ----------
-   Sequential IDs like EIG-S-001 using a Firestore counter. */
+/* ---------- Registration ID generator (gap-filling recycler) ----------
+   Sequential IDs like EIG-S-001. Deleted IDs are recycled into a pool
+   and reused by the next newcomer before incrementing the counter. */
 
 function pad(num, width) {
   var s = String(num);
@@ -44,32 +45,55 @@ function pad(num, width) {
   return s;
 }
 
-var counterCache = { solo: 0, group: 0 };
-
-async function nextRegistrationNumber(key) {
-  if (counterCache[key] > 0) {
-    counterCache[key]++;
-    return counterCache[key];
-  }
+async function generateRegistrationId(prefix) {
+  if (!db) return null;
+  var key = prefix === 'EIG-G' ? 'group' : 'solo';
   var counterRef = doc(db, 'system_config', 'registration_counter');
   var counterSnap = await getDoc(counterRef);
-  var current = counterSnap.exists() ? (counterSnap.data()[key] || 0) : 0;
-  counterCache[key] = current + 1;
-  return counterCache[key];
-}
+  var counterData = counterSnap.exists() ? counterSnap.data() : {};
 
-async function generateRegistrationId(prefix) {
-  var key = prefix === 'EIG-G' ? 'group' : 'solo';
-  var seq = await nextRegistrationNumber(key);
+  // Check recycled pool first — reuse lowest freed number
+  var recycledKey = key + '_recycled';
+  var recycled = Array.isArray(counterData[recycledKey]) ? counterData[recycledKey].slice() : [];
+
+  var seq;
+  if (recycled.length > 0) {
+    recycled.sort(function (a, b) { return a - b; });
+    seq = recycled.shift(); // take the lowest available number
+    await setDoc(counterRef, { [recycledKey]: recycled }, { merge: true });
+  } else {
+    var current = counterData[key] || 0;
+    seq = current + 1;
+    await setDoc(counterRef, { [key]: seq }, { merge: true });
+  }
+
   return prefix + '-' + pad(seq, 3);
 }
 
-async function saveCounter(key, value) {
-  var counterRef = doc(db, 'system_config', 'registration_counter');
+async function recycleRegistrationId(registrationId) {
+  if (!db || !registrationId) return;
   try {
-    await setDoc(counterRef, { [key]: value }, { merge: true });
+    var parts = registrationId.split('-');
+    // Expect EIG-S-001 → parts = ['EIG', 'S', '001']
+    if (parts.length !== 3) return;
+    var typeChar = parts[1].toUpperCase();
+    var num = parseInt(parts[2], 10);
+    if (isNaN(num) || num < 1) return;
+
+    var key = typeChar === 'G' ? 'group' : 'solo';
+    var recycledKey = key + '_recycled';
+    var counterRef = doc(db, 'system_config', 'registration_counter');
+    var counterSnap = await getDoc(counterRef);
+    var counterData = counterSnap.exists() ? counterSnap.data() : {};
+
+    var recycled = Array.isArray(counterData[recycledKey]) ? counterData[recycledKey].slice() : [];
+    if (recycled.indexOf(num) === -1) {
+      recycled.push(num);
+    }
+    await setDoc(counterRef, { [recycledKey]: recycled }, { merge: true });
+    console.log('Recycled ID number', num, 'into pool for', key);
   } catch (e) {
-    console.warn('Counter doc update failed (non-blocking):', e);
+    console.warn('recycleRegistrationId error (non-blocking):', e);
   }
 }
 
@@ -84,6 +108,7 @@ async function saveSoloRegistration(data) {
   if (!db) return null;
   try {
     var registrationId = await generateRegistrationId('EIG-S');
+    if (!registrationId) throw new Error('ID generation failed');
     var docRef = await addDoc(collection(db, 'eigaversa_solo'), {
       registrationId: registrationId,
       type: 'solo',
@@ -96,7 +121,6 @@ async function saveSoloRegistration(data) {
       status: 'pending',
       registeredAt: serverTimestamp()
     });
-    saveCounter('solo', counterCache.solo);
     console.log('Solo registration saved:', registrationId);
     return { id: docRef.id, registrationId: registrationId };
   } catch (e) {
@@ -114,6 +138,7 @@ async function saveGroupRegistration(data) {
   if (!db) return null;
   try {
     var registrationId = await generateRegistrationId('EIG-G');
+    if (!registrationId) throw new Error('ID generation failed');
     var docRef = await addDoc(collection(db, 'eigaversa_groups'), {
       registrationId: registrationId,
       type: 'group',
@@ -222,10 +247,14 @@ async function updateRegistrationStatus(collectionName, id, status) {
   }
 }
 
-async function deleteRegistration(collectionName, id) {
+async function deleteRegistration(collectionName, id, registrationId) {
   if (!db || !id) return false;
   try {
     await deleteDoc(doc(db, collectionName, id));
+    // Recycle the freed ID number back into the pool for reuse
+    if (registrationId) {
+      await recycleRegistrationId(registrationId);
+    }
     return true;
   } catch (e) {
     console.warn('Firestore deleteRegistration error:', e);

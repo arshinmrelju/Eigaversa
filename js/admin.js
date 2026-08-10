@@ -18,18 +18,26 @@ document.addEventListener('DOMContentLoaded', function () {
   var adminCode = document.getElementById('admin-code');
   var loginBtn = document.getElementById('login-btn');
   var loginMsg = document.getElementById('login-msg');
+  var togglePassword = document.getElementById('toggle-password');
+  var eyeIconOpen = document.getElementById('eye-icon-open');
+  var eyeIconClosed = document.getElementById('eye-icon-closed');
   var logoutBtn = document.getElementById('logout-btn');
   var exportBtn = document.getElementById('export-csv-btn');
 
   var tabSolo = document.getElementById('tab-solo');
   var tabGroups = document.getElementById('tab-groups');
+  var tabSoloCount = document.getElementById('tab-solo-count');
+  var tabGroupsCount = document.getElementById('tab-groups-count');
+
   var searchInput = document.getElementById('filter-search');
+  var searchClearBtn = document.getElementById('filter-search-clear');
   var deptFilter = document.getElementById('filter-department');
   var themeFilter = document.getElementById('filter-theme');
   var statusFilter = document.getElementById('filter-status');
   var tableBody = document.getElementById('table-body');
   var emptyState = document.getElementById('empty-state');
   var rowCount = document.getElementById('row-count');
+  var toastEl = document.getElementById('admin-toast');
 
   var statTotal = document.getElementById('stat-total');
   var statSolo = document.getElementById('stat-solo');
@@ -37,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var statParticipants = document.getElementById('stat-participants');
 
   var thEntity = document.getElementById('th-entity');
-  var thYear = document.getElementById('th-year');
+  var thDept = document.getElementById('th-dept');
   var thContact = document.getElementById('th-contact');
 
   var DEPARTMENTS = [
@@ -51,6 +59,16 @@ document.addEventListener('DOMContentLoaded', function () {
     'Department of Travel and Tourism'
   ];
 
+  var STANDARD_THEMES = [
+    'Romance',
+    'Horror Comedy',
+    'Drama',
+    'Action / Thriller',
+    'Sci-Fi / Fantasy',
+    'Comedy',
+    'Period / Classic'
+  ];
+
   var STATUSES = ['pending', 'confirmed', 'approved', 'rejected'];
 
   /* --- State --- */
@@ -59,6 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var currentTab = 'solo';
   var unsubSolo = null;
   var unsubGroups = null;
+  var toastTimer = null;
 
   function escapeHtml(str) {
     return String(str == null ? '' : str)
@@ -71,6 +90,17 @@ document.addEventListener('DOMContentLoaded', function () {
   function formatDate(date) {
     if (!date) return '-';
     return date.toLocaleDateString();
+  }
+
+  /* --- Toast Notifications --- */
+  function showToast(message) {
+    if (!toastEl) return;
+    toastEl.textContent = message;
+    toastEl.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toastEl.hidden = true;
+    }, 3500);
   }
 
   /* --- Auth --- */
@@ -94,14 +124,29 @@ document.addEventListener('DOMContentLoaded', function () {
   function setLoginMsg(message, isError) {
     if (!loginMsg) return;
     loginMsg.textContent = message;
-    loginMsg.hidden = false;
-    loginMsg.className = 'login-msg' + (isError ? ' is-error' : '');
+    loginMsg.hidden = !message;
+    loginMsg.className = 'login-msg' + (isError ? '' : ' is-success');
+  }
+
+  /* Eye toggle */
+  if (togglePassword && adminCode) {
+    togglePassword.addEventListener('click', function () {
+      var isPassword = adminCode.type === 'password';
+      adminCode.type = isPassword ? 'text' : 'password';
+      // Use classList so display:none fires reliably on SVG elements
+      if (eyeIconOpen) eyeIconOpen.classList.toggle('is-hidden', isPassword);
+      if (eyeIconClosed) eyeIconClosed.classList.toggle('is-hidden', !isPassword);
+      adminCode.focus();
+    });
+    // Set initial state explicitly (open eye shown, closed eye hidden)
+    if (eyeIconOpen) eyeIconOpen.classList.remove('is-hidden');
+    if (eyeIconClosed) eyeIconClosed.classList.add('is-hidden');
   }
 
   loginForm.addEventListener('submit', function (event) {
     event.preventDefault();
     var code = adminCode.value.trim();
-    if (!code) return;
+    if (!code) { adminCode.focus(); return; }
 
     if (!fb || !fb.isConfigured()) {
       setLoginMsg('Firebase is not configured. Add your config in js/firebase-config.js.', true);
@@ -109,13 +154,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     loginBtn.disabled = true;
-    loginBtn.textContent = 'Checking...';
-    setLoginMsg('', false);
+    loginBtn.classList.add('is-loading');
     loginMsg.hidden = true;
 
     fb.getAdminConfig().then(function (config) {
       loginBtn.disabled = false;
-      loginBtn.textContent = 'Sign In';
+      loginBtn.classList.remove('is-loading');
 
       var match = config && config.accessCode
         ? code === config.accessCode
@@ -124,6 +168,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!match) {
         setLoginMsg('Incorrect access code. Please try again.', true);
         adminCode.select();
+        adminCode.focus();
         return;
       }
 
@@ -134,6 +179,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
       sessionStorage.setItem(SESSION_KEY, '1');
       showDashboard();
+    }).catch(function () {
+      loginBtn.disabled = false;
+      loginBtn.classList.remove('is-loading');
+      setLoginMsg('Connection error. Please check your network and try again.', true);
     });
   });
 
@@ -154,12 +203,16 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!unsubSolo) {
       unsubSolo = fb.subscribeToSolo(function (list) {
         soloList = list;
+        populateThemeFilter();
+        populateDepartmentFilter();
         render();
       });
     }
     if (!unsubGroups) {
       unsubGroups = fb.subscribeToGroups(function (list) {
         groupList = list;
+        populateThemeFilter();
+        populateDepartmentFilter();
         render();
       });
     }
@@ -170,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (unsubGroups) { unsubGroups(); unsubGroups = null; }
   }
 
-  /* --- Tabs --- */
+  /* --- Tabs & Stat Card Triggers --- */
 
   function switchTab(tab) {
     currentTab = tab;
@@ -179,11 +232,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (tab === 'solo') {
       thEntity.textContent = 'Name';
-      thYear.textContent = 'Year';
+      thDept.textContent = 'Department & Year';
       thContact.textContent = 'Phone';
     } else {
       thEntity.textContent = 'Team Name';
-      thYear.textContent = 'Members';
+      thDept.textContent = 'Department & Members';
       thContact.textContent = 'Contact';
     }
     render();
@@ -192,10 +245,97 @@ document.addEventListener('DOMContentLoaded', function () {
   tabSolo.addEventListener('click', function () { switchTab('solo'); });
   tabGroups.addEventListener('click', function () { switchTab('groups'); });
 
-  searchInput.addEventListener('input', render);
+  /* Stat card interactive listeners */
+  document.querySelectorAll('.stat-card[data-stat-card]').forEach(function (card) {
+    card.addEventListener('click', function () {
+      var target = card.getAttribute('data-stat-card');
+      if (target === 'solo') {
+        switchTab('solo');
+      } else if (target === 'groups') {
+        switchTab('groups');
+      } else if (target === 'total') {
+        // Reset all filters
+        searchInput.value = '';
+        if (searchClearBtn) searchClearBtn.hidden = true;
+        deptFilter.value = '';
+        themeFilter.value = '';
+        statusFilter.value = '';
+        render();
+      }
+    });
+  });
+
+  /* Search Clear Button */
+  if (searchInput && searchClearBtn) {
+    searchInput.addEventListener('input', function () {
+      searchClearBtn.hidden = !searchInput.value.trim();
+      render();
+    });
+    searchClearBtn.addEventListener('click', function () {
+      searchInput.value = '';
+      searchClearBtn.hidden = true;
+      searchInput.focus();
+      render();
+    });
+  }
+
   deptFilter.addEventListener('change', render);
   themeFilter.addEventListener('change', render);
   statusFilter.addEventListener('change', render);
+
+  /* --- Dynamic Filters Population --- */
+
+  function populateDepartmentFilter() {
+    var existing = Array.from(deptFilter.options).map(function (o) { return o.value; });
+    var allDepts = DEPARTMENTS.slice();
+
+    // Incorporate any dynamic dept in Firestore data
+    soloList.concat(groupList).forEach(function (doc) {
+      if (doc.department && allDepts.indexOf(doc.department) === -1) {
+        allDepts.push(doc.department);
+      }
+    });
+
+    allDepts.sort();
+    allDepts.forEach(function (d) {
+      if (existing.indexOf(d) === -1) {
+        var opt = document.createElement('option');
+        opt.value = d;
+        opt.textContent = d;
+        deptFilter.appendChild(opt);
+      }
+    });
+  }
+
+  function populateThemeFilter() {
+    var selectedValue = themeFilter.value;
+    var themesSet = {};
+
+    STANDARD_THEMES.forEach(function (t) {
+      themesSet[t] = true;
+    });
+
+    soloList.concat(groupList).forEach(function (doc) {
+      if (doc.theme && doc.theme.trim()) {
+        themesSet[doc.theme.trim()] = true;
+      }
+    });
+
+    var themesList = Object.keys(themesSet).sort();
+    themeFilter.innerHTML = '<option value="">All Themes</option>';
+
+    themesList.forEach(function (t) {
+      var opt = document.createElement('option');
+      opt.value = t;
+      opt.textContent = t;
+      if (t === selectedValue) opt.selected = true;
+      themeFilter.appendChild(opt);
+    });
+  }
+
+  function normalizeStr(str) {
+    return String(str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  }
 
   /* --- Filtering --- */
 
@@ -210,17 +350,19 @@ document.addEventListener('DOMContentLoaded', function () {
       .map(function (doc) {
         var searchable;
         if (currentTab === 'solo') {
-          searchable = [doc.registrationId, doc.name, doc.phone, doc.department, doc.rollNo].join(' ').toLowerCase();
+          searchable = [doc.registrationId, doc.name, doc.phone, doc.department, doc.rollNo, doc.theme, doc.status].join(' ').toLowerCase();
         } else {
           var memberNames = (doc.members || []).map(function (m) { return m.name; }).join(' ');
-          searchable = [doc.registrationId, doc.teamName, doc.department, doc.phone, memberNames].join(' ').toLowerCase();
+          searchable = [doc.registrationId, doc.teamName, doc.department, doc.phone, memberNames, doc.theme, doc.status].join(' ').toLowerCase();
         }
         return { doc: doc, searchable: searchable };
       })
       .filter(function (item) {
         if (q && item.searchable.indexOf(q) === -1) return false;
         if (dept && item.doc.department !== dept) return false;
-        if (theme && theme !== '' && (item.doc.theme || '').toLowerCase() !== theme.toLowerCase()) return false;
+        if (theme && theme !== '') {
+          if (normalizeStr(item.doc.theme) !== normalizeStr(theme)) return false;
+        }
         if (status && item.doc.status !== status) return false;
         return true;
       })
@@ -248,14 +390,14 @@ document.addEventListener('DOMContentLoaded', function () {
     groupList.forEach(function (g) {
       participants += (g.memberCount || (g.members || []).length || 0);
     });
+
     statTotal.textContent = total;
     statSolo.textContent = soloList.length;
     statGroups.textContent = groupList.length;
     statParticipants.textContent = participants;
-  }
 
-  function statusBadge(status) {
-    return '<span class="reg-status status-' + escapeHtml(status) + '">' + escapeHtml(status) + '</span>';
+    if (tabSoloCount) tabSoloCount.textContent = soloList.length;
+    if (tabGroupsCount) tabGroupsCount.textContent = groupList.length;
   }
 
   function renderRows(rows) {
@@ -274,12 +416,10 @@ document.addEventListener('DOMContentLoaded', function () {
         var soloRoll = doc.rollNo ? '<br><small>Roll ' + escapeHtml(doc.rollNo) + '</small>' : '';
         tr.innerHTML =
           '<td class="cell-id" data-label="ID"><span class="cell-value">' + escapeHtml(doc.registrationId) + '</span></td>' +
-          '<td data-label="Name"><span class="cell-value">' + escapeHtml(doc.name) + soloRoll + '</span></td>' +
-          '<td data-label="Department"><span class="cell-value">' + escapeHtml(doc.department) + '</span></td>' +
-          '<td data-label="Year"><span class="cell-value">' + escapeHtml(doc.year) + '</span></td>' +
-          '<td data-label="Theme"><span class="cell-value">' + escapeHtml(doc.theme) + '</span></td>' +
-          '<td data-label="Phone"><span class="cell-value">' + escapeHtml(doc.phone) + '</span></td>' +
-          '<td data-label="Status"><span class="cell-value">' + statusBadge(doc.status) + '</span></td>';
+          '<td data-label="Name"><span class="cell-value"><strong>' + escapeHtml(doc.name) + '</strong>' + soloRoll + '</span></td>' +
+          '<td data-label="Department &amp; Year"><span class="cell-value"><strong>' + escapeHtml(doc.department) + '</strong><br><small>' + escapeHtml(doc.year) + '</small></span></td>' +
+          '<td class="cell-nowrap" data-label="Theme"><span class="cell-value">' + escapeHtml(doc.theme) + '</span></td>' +
+          '<td class="cell-nowrap cell-contact" data-label="Phone"><span class="cell-value">' + escapeHtml(doc.phone) + '</span></td>';
       } else {
         var members = doc.members || [];
         var contact = doc.phone ? escapeHtml(doc.phone) : '-';
@@ -288,21 +428,22 @@ document.addEventListener('DOMContentLoaded', function () {
         }).join(', ');
         tr.innerHTML =
           '<td class="cell-id" data-label="ID"><span class="cell-value">' + escapeHtml(doc.registrationId) + '</span></td>' +
-          '<td data-label="Team Name"><span class="cell-value">' + escapeHtml(doc.teamName) + '<br><small>' + escapeHtml(memberInfo) + '</small></span></td>' +
-          '<td data-label="Department"><span class="cell-value">' + escapeHtml(doc.department) + '</span></td>' +
-          '<td data-label="Members"><span class="cell-value">' + (doc.memberCount || members.length) + '</span></td>' +
-          '<td data-label="Theme"><span class="cell-value">' + escapeHtml(doc.theme) + '</span></td>' +
-          '<td data-label="Contact"><span class="cell-value">' + contact + '</span></td>' +
-          '<td data-label="Status"><span class="cell-value">' + statusBadge(doc.status) + '</span></td>';
+          '<td data-label="Team Name"><span class="cell-value"><strong>' + escapeHtml(doc.teamName) + '</strong><br><small>' + escapeHtml(memberInfo) + '</small></span></td>' +
+          '<td data-label="Department &amp; Members"><span class="cell-value"><strong>' + escapeHtml(doc.department) + '</strong><br><small>' + (doc.memberCount || members.length) + ' members</small></span></td>' +
+          '<td class="cell-nowrap" data-label="Theme"><span class="cell-value">' + escapeHtml(doc.theme) + '</span></td>' +
+          '<td class="cell-nowrap cell-contact" data-label="Contact"><span class="cell-value">' + contact + '</span></td>';
       }
 
-      var actionsTd = document.createElement('td');
-      actionsTd.className = 'cell-actions';
-      actionsTd.setAttribute('data-label', 'Actions');
+      var statusTd = document.createElement('td');
+      statusTd.className = 'cell-status';
+      statusTd.setAttribute('data-label', 'Status');
 
+      /* Integrated status selector badge */
       var statusSelect = document.createElement('select');
       statusSelect.className = 'status-select';
-      statusSelect.setAttribute('aria-label', 'Change status');
+      statusSelect.setAttribute('aria-label', 'Change status for ' + doc.registrationId);
+      statusSelect.setAttribute('data-status', doc.status || 'pending');
+
       STATUSES.forEach(function (s) {
         var opt = document.createElement('option');
         opt.value = s;
@@ -314,50 +455,64 @@ document.addEventListener('DOMContentLoaded', function () {
       var collectionName = currentTab === 'solo' ? 'eigaversa_solo' : 'eigaversa_groups';
 
       statusSelect.addEventListener('change', function () {
-        fb.updateRegistrationStatus(collectionName, doc.id, statusSelect.value);
+        var newStatus = statusSelect.value;
+        statusSelect.setAttribute('data-status', newStatus);
+        fb.updateRegistrationStatus(collectionName, doc.id, newStatus).then(function (ok) {
+          if (ok) {
+            doc.status = newStatus;
+            showToast('Registration ' + doc.registrationId + ' status set to ' + newStatus.toUpperCase());
+            updateStats();
+          } else {
+            showToast('Failed to update status for ' + doc.registrationId);
+          }
+        });
       });
 
-      var deleteBtn = document.createElement('button');
-      deleteBtn.type = 'button';
-      deleteBtn.className = 'delete-btn';
-      deleteBtn.textContent = 'Delete';
-      deleteBtn.setAttribute('aria-label', 'Delete registration ' + doc.registrationId);
-      deleteBtn.addEventListener('click', function () {
-        if (window.confirm('Delete registration ' + doc.registrationId + '?')) {
-          fb.deleteRegistration(collectionName, doc.id);
-        }
-      });
+      statusTd.appendChild(statusSelect);
 
+      var actionsTd = document.createElement('td');
+      actionsTd.className = 'cell-actions';
+      actionsTd.setAttribute('data-label', 'Actions');
+
+      var actionGroup = document.createElement('div');
+      actionGroup.className = 'action-btn-group';
+
+      /* Entry Pass button */
       var passBtn = document.createElement('button');
       passBtn.type = 'button';
-      passBtn.className = 'btn btn-ghost btn-sm';
-      passBtn.style.padding = '4px 8px';
-      passBtn.style.fontSize = '0.78rem';
-      passBtn.textContent = '🎟️ Pass';
-      passBtn.setAttribute('aria-label', 'View pass for ' + doc.registrationId);
+      passBtn.className = 'pass-btn';
+      passBtn.innerHTML = '<span>🎟️</span> Pass';
+      passBtn.setAttribute('aria-label', 'View entry pass for ' + doc.registrationId);
       passBtn.addEventListener('click', function () {
         if (window.EigaversaTicket) {
           window.EigaversaTicket.showModal(doc, doc.registrationId);
         }
       });
 
-      actionsTd.appendChild(statusSelect);
-      actionsTd.appendChild(passBtn);
-      actionsTd.appendChild(deleteBtn);
+      /* Delete button */
+      var deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.textContent = 'Delete';
+      deleteBtn.setAttribute('aria-label', 'Delete registration ' + doc.registrationId);
+      deleteBtn.addEventListener('click', function () {
+        if (window.confirm('Are you sure you want to delete registration ' + doc.registrationId + '?')) {
+          fb.deleteRegistration(collectionName, doc.id, doc.registrationId).then(function (ok) {
+            if (ok) {
+              showToast('Deleted ' + doc.registrationId + ' — ID is now available for reuse');
+            }
+          });
+        }
+      });
+
+      actionGroup.appendChild(passBtn);
+      actionGroup.appendChild(deleteBtn);
+      actionsTd.appendChild(actionGroup);
+
+      tr.appendChild(statusTd);
       tr.appendChild(actionsTd);
 
       tableBody.appendChild(tr);
-    });
-  }
-
-  /* --- Department filter options --- */
-
-  function populateDepartmentFilter() {
-    DEPARTMENTS.forEach(function (d) {
-      var opt = document.createElement('option');
-      opt.value = d;
-      opt.textContent = d;
-      deptFilter.appendChild(opt);
     });
   }
 
@@ -366,7 +521,7 @@ document.addEventListener('DOMContentLoaded', function () {
   exportBtn.addEventListener('click', function () {
     var rows = getFilteredRows();
     if (rows.length === 0) {
-      window.alert('No registrations to export.');
+      showToast('No registrations to export.');
       return;
     }
 
@@ -420,6 +575,7 @@ document.addEventListener('DOMContentLoaded', function () {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    showToast('Exported ' + rows.length + ' registrations to CSV');
   });
 
   function csvCell(value) {
@@ -446,3 +602,4 @@ document.addEventListener('DOMContentLoaded', function () {
     showLogin();
   }
 });
+
