@@ -108,6 +108,7 @@
     if (!theme) return 'General';
     if (theme.toLowerCase() === 'romance') return 'Romance';
     if (theme.toLowerCase() === 'horror-comedy') return 'Horror Comedy';
+    if (theme.toLowerCase() === 'eccentricity') return 'Eccentricity';
     return theme;
   }
 
