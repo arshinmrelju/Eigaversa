@@ -53,8 +53,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     card.appendChild(head);
     card.appendChild(nameField);
-    card.appendChild(rollField);
     card.appendChild(yearField);
+    card.appendChild(rollField);
 
     return card;
   }
@@ -202,6 +202,31 @@ document.addEventListener('DOMContentLoaded', function () {
     addBtn.setAttribute('aria-disabled', atMax ? 'true' : 'false');
     limitMsg.hidden = !atMax;
   }
+
+  /* --- Hide roll number for 1st Year --- */
+
+  function toggleRollField(card) {
+    if (!card) return;
+    var rollSelect = card.querySelector('select[name="rollNo"]');
+    if (!rollSelect) return;
+    var rollField = rollSelect.closest('.form-field');
+    var yearSelect = card.querySelector('select[name="year"]');
+    var isFirstYear = yearSelect && (yearSelect.value === '1st Year' || yearSelect.value === '1st Year (PG)');
+
+    rollField.hidden = isFirstYear;
+    rollSelect.required = !isFirstYear;
+    if (isFirstYear) {
+      rollSelect.value = '';
+      clearError(rollField);
+    }
+  }
+
+  container.addEventListener('change', function (event) {
+    var target = event.target;
+    if (target.matches && target.matches('select[name="year"]')) {
+      toggleRollField(target.closest('.member-card'));
+    }
+  });
 
   /* --- Validation --- */
 

@@ -24,6 +24,27 @@
     }
   }
 
+  /* --- Hide roll number for 1st Year --- */
+
+  var yearSelect = document.getElementById('year-of-study');
+  var rollField = rollSelect ? rollSelect.closest('.form-field') : null;
+
+  function toggleRollField() {
+    if (!rollField || !rollSelect) return;
+    var isFirstYear = yearSelect.value === '1st Year' || yearSelect.value === '1st Year (PG)';
+    rollField.hidden = isFirstYear;
+    rollSelect.required = !isFirstYear;
+    if (isFirstYear) {
+      rollSelect.value = '';
+      clearError(rollField);
+    }
+  }
+
+  if (yearSelect) {
+    yearSelect.addEventListener('change', toggleRollField);
+    toggleRollField();
+  }
+
   /* --- Validation helpers --- */
 
   function validateField(input) {
