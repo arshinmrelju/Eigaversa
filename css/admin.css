@@ -953,6 +953,15 @@
   }
 }
 
+@media (max-width: 720px) {
+  .admin-toast {
+    bottom: 24px;
+    right: 16px;
+    left: 16px;
+    text-align: center;
+  }
+}
+
 /* ---------- Empty State Guard (CRITICAL BUG FIX) ---------- */
 .empty-state[hidden] {
   display: none !important;
@@ -1223,48 +1232,16 @@
 }
 
 @media (max-width: 560px) {
-  .admin-header-inner {
-    flex-wrap: wrap;
-    gap: 10px;
-    padding-block: 10px;
-  }
-
   .admin-header-logo {
-    height: 32px;
+    height: 30px;
   }
 
   .admin-brand-text h1 {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
 
   .admin-brand-text span {
-    font-size: 0.66rem;
-  }
-
-  .admin-header-actions {
-    width: 100%;
-    flex-wrap: wrap;
-    justify-content: stretch;
-    gap: 8px;
-  }
-
-  .admin-header-actions .btn {
-    flex: 1 1 auto;
-    padding: 10px 12px;
-    font-size: 0.78rem;
-    letter-spacing: 0.08em;
-  }
-
-  .admin-header-actions .btn svg {
-    width: 14px;
-    height: 14px;
-    flex-shrink: 0;
-  }
-
-  /* Scan QR gets its own full row so the icon + label never gets cramped */
-  #scan-qr-btn {
-    flex: 1 1 100%;
-    gap: 6px;
+    font-size: 0.62rem;
   }
 
   .scan-modal {
@@ -1432,52 +1409,82 @@
   font-size: 0.8rem;
 }
 
-/* ---------- Thumb-friendly sticky bottom bar (mobile) ---------- */
+/* ---------- Mobile header (brand + Scan QR only) ---------- */
 @media (max-width: 720px) {
-  .admin-body {
-    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  .admin-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: #0b0d12;
+    border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   }
 
   .admin-header-inner {
-    justify-content: flex-start;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: 12px;
+    padding-inline: 16px;
+  }
+
+  .admin-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .admin-header-logo {
+    height: 32px;
+    width: auto;
+  }
+
+  .admin-brand-text h1 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.1;
+  }
+
+  .admin-brand-text span {
+    font-size: 0.65rem;
+    color: var(--admin-amber);
+    letter-spacing: 0.08em;
   }
 
   .admin-header-actions {
-    position: fixed;
-    top: auto;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 60;
-    display: grid;
-    grid-template-columns: 1.5fr 1fr 1.1fr;
+    display: flex;
+    align-items: center;
     gap: 8px;
-    width: auto;
-    margin: 0;
-    padding: 10px 12px;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom));
-    background: rgba(10, 11, 13, 0.96);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border-top: 1px solid var(--clr-border-strong);
-    box-shadow: 0 -12px 32px rgba(0, 0, 0, 0.55);
   }
 
   .admin-header-actions .btn {
-    flex: none;
-    min-height: 52px;
-    font-size: 0.76rem;
-    letter-spacing: 0.06em;
+    min-height: 44px;
+    padding: 10px 16px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transform: none !important;
+  }
+
+  .admin-header-actions .btn:hover,
+  .admin-header-actions .btn:active {
+    transform: none !important;
+    box-shadow: none !important;
   }
 
   .admin-header-actions .btn svg {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     flex-shrink: 0;
   }
 
-  #scan-qr-btn {
-    flex: none;
+  /* Only Scan QR is needed on mobile; hide Export PDF and Logout */
+  #export-pdf-btn,
+  #logout-btn {
+    display: none !important;
   }
 
   /* ---------- Table → card list ---------- */
@@ -1567,6 +1574,13 @@
     display: none;
   }
 
+  .admin-table .action-btn-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+
   .admin-table .status-select {
     width: 100%;
     min-height: 48px;
@@ -1575,15 +1589,12 @@
     padding-bottom: 10px;
   }
 
-  .admin-table .cell-actions .btn {
-    width: 100%;
-    min-height: 48px;
-    max-width: none;
-  }
-
+  .admin-table .cell-actions .btn,
+  .admin-table .pass-btn,
   .admin-table .delete-btn {
     width: 100%;
     min-height: 48px;
+    max-width: none;
   }
 
   .admin-count,
@@ -1594,15 +1605,6 @@
 
 /* ---------- Very small screens ---------- */
 @media (max-width: 420px) {
-  .admin-header-actions {
-    gap: 6px;
-    padding-inline: 10px;
-  }
-
-  .admin-header-actions .btn {
-    padding-inline: 8px;
-  }
-
   .admin-table tbody {
     padding: 10px;
   }
@@ -1628,6 +1630,23 @@
 
   .admin-header-actions .btn {
     padding-inline: 12px;
+  }
+
+  .admin-header-actions {
+    gap: 6px;
+    padding-inline: 8px;
+  }
+
+  .admin-header-actions .btn {
+    min-height: 48px;
+    font-size: 0.72rem;
+    gap: 6px;
+    padding-inline: 6px;
+  }
+
+  .admin-header-actions .btn svg {
+    width: 15px;
+    height: 15px;
   }
 }
 
@@ -1686,4 +1705,38 @@
   width: 100%;
   border: 0;
   background: #ffffff;
+}
+
+/* ---------- PDF Preview Modal: mobile ---------- */
+@media (max-width: 640px) {
+  .pdf-preview-modal {
+    padding: 10px;
+  }
+
+  .pdf-preview-shell {
+    height: calc(100vh - 20px);
+  }
+
+  .pdf-preview-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .pdf-preview-title {
+    text-align: center;
+    font-size: 0.85rem;
+  }
+
+  .pdf-preview-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .pdf-preview-actions .btn {
+    flex: 1;
+    justify-content: center;
+    padding-inline: 8px;
+  }
 }
