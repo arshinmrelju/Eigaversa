@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var eyeIconOpen = document.getElementById('eye-icon-open');
   var eyeIconClosed = document.getElementById('eye-icon-closed');
   var logoutBtn = document.getElementById('logout-btn');
-  var exportBtn = document.getElementById('export-csv-btn');
+  var exportBtn = document.getElementById('export-pdf-btn');
 
   var tabSolo = document.getElementById('tab-solo');
   var tabGroups = document.getElementById('tab-groups');
@@ -516,7 +516,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  /* --- CSV Export --- */
+  /* --- PDF Export --- */
 
   exportBtn.addEventListener('click', function () {
     var rows = getFilteredRows();
@@ -525,65 +525,279 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    var headers;
-    if (currentTab === 'solo') {
-      headers = ['Registration ID', 'Name', 'Phone', 'Department', 'Year', 'Roll Number', 'Theme', 'Status', 'Registered Date'];
-    } else {
-      headers = ['Registration ID', 'Team Name', 'Department', 'Theme', 'Contact Phone', 'Members', 'Status', 'Registered Date'];
+    var title = 'EIGAVERSA ' + (currentTab === 'solo' ? 'Solo' : 'Group') + ' Registrations';
+
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+      showToast('PDF library not loaded. Check your connection and try again.');
+      return;
     }
 
-    var lines = [headers.map(csvCell).join(',')];
+    /* --- Build data rows from current filtered results --- */
 
-    rows.forEach(function (doc) {
-      var values;
+    var headings = currentTab === 'solo'
+      ? ['Registration ID', 'Name', 'Phone', 'Department', 'Year', 'Roll', 'Theme', 'Status', 'Registered Date']
+      : ['Registration ID', 'Team Name', 'Department', 'Theme', 'Contact Phone', 'Members', 'Status', 'Registered Date'];
+
+    var bodyRows = rows.map(function (doc) {
       if (currentTab === 'solo') {
-        values = [
-          doc.registrationId,
-          doc.name,
-          doc.phone,
-          doc.department,
-          doc.year,
-          doc.rollNo,
-          doc.theme,
-          doc.status,
-          formatDate(doc.registeredAtDate)
-        ];
-      } else {
-        var members = (doc.members || []).map(function (m) {
-          return m.name + ' (' + m.year + (m.rollNo ? ', Roll ' + m.rollNo : '') + ')';
-        }).join(' | ');
-        values = [
-          doc.registrationId,
-          doc.teamName,
-          doc.department,
-          doc.theme,
-          doc.phone,
-          members,
-          doc.status,
-          formatDate(doc.registeredAtDate)
+        return [
+          doc.registrationId, doc.name, doc.phone, doc.department, doc.year,
+          doc.rollNo || '-', doc.theme, doc.status, formatDate(doc.registeredAtDate)
         ];
       }
-      lines.push(values.map(csvCell).join(','));
+      var members = (doc.members || []).map(function (m) {
+        return m.name + ' (' + m.year + (m.rollNo ? ', Roll ' + m.rollNo : '') + ')';
+      }).join(' | ');
+      return [
+        doc.registrationId, doc.teamName, doc.department, doc.theme, doc.phone,
+        members, doc.status, formatDate(doc.registeredAtDate)
+      ];
     });
 
-    var blob = new Blob(['\ufeff' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = 'eigaversa_' + currentTab + '_registrations.csv';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast('Exported ' + rows.length + ' registrations to CSV');
+    /* --- Load college logo and generate PDF --- */
+
+    var logo = new Image();
+    logo.onload = function () {
+      renderPdf(logo, headings, bodyRows, title, rows.length);
+    };
+    logo.onerror = function () {
+      renderPdf(null, headings, bodyRows, title, rows.length);
+    };
+    logo.src = 'assets/Pazhassiraja_College_Pulpally_Logo.png';
   });
 
-  function csvCell(value) {
-    var s = String(value == null ? '' : value);
-    if (/[",\n]/.test(s)) {
-      s = '"' + s.replace(/"/g, '""') + '"';
+  function renderPdf(logoImg, headings, bodyRows, title, count) {
+    var doc = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    var PW  = doc.internal.pageSize.getWidth();
+    var PH  = doc.internal.pageSize.getHeight();
+    var MX  = 14;
+    var HDR = 35;
+    var FTR = 10;
+
+    var NAVY  = [15,  23,  42];    // Deep Navy for primary text and table headers
+    var GOLD  = [217, 119,  6];    // Amber Gold for accent lines
+    var WHITE = [255, 255, 255];   // Pure White
+    var SLATE = [71,  85,  105];   // Muted slate for subtitles
+    var BODY  = [30,  41,  59];    // Dark charcoal for table body
+    var LINE  = [226, 232, 240];   // Clean border line
+    var BG_ALT= [248, 250, 252];   // Very light row stripe
+
+    function sBadge(raw) {
+      var s = (raw || '').toLowerCase();
+      if (s === 'confirmed') return { bg:[220,252,231], tx:[22, 101, 52] };
+      if (s === 'approved')  return { bg:[219,234,254], tx:[30,  64,175] };
+      if (s === 'rejected')  return { bg:[254,226,226], tx:[153, 27, 27] };
+      return                        { bg:[254,243,199], tx:[146, 64, 14] };
     }
-    return s;
+
+    function drawHeader() {
+      // Light background to save ink and look clean on paper
+      doc.setFillColor.apply(doc, WHITE);
+      doc.rect(0, 0, PW, HDR, 'F');
+
+      // Top dual accent stripe (Navy + Gold)
+      doc.setFillColor.apply(doc, NAVY);
+      doc.rect(0, 0, PW, 2.5, 'F');
+      doc.setFillColor.apply(doc, GOLD);
+      doc.rect(0, 2.5, PW, 1, 'F');
+
+      var maxH = 22, maxW = 28;
+      var lw = maxH, lh = maxH;
+      if (logoImg) {
+        var nw = logoImg.naturalWidth || logoImg.width;
+        var nh = logoImg.naturalHeight || logoImg.height;
+        if (nw && nh) {
+          var aspect = nw / nh;
+          if (aspect > maxW / maxH) {
+            lw = maxW;
+            lh = maxW / aspect;
+          } else {
+            lh = maxH;
+            lw = maxH * aspect;
+          }
+        }
+      }
+      var lx = MX, ly = (HDR - lh) / 2 + 1.5;
+      if (logoImg) {
+        try { doc.addImage(logoImg, 'PNG', lx, ly, lw, lh); } catch (e) {}
+      }
+
+      var tx = lx + lw + 5;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.setTextColor.apply(doc, NAVY);
+      doc.text('EIGAVERSA', tx, HDR / 2 + 0.5);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(6.5);
+      doc.setTextColor.apply(doc, SLATE);
+      doc.text('Movie Character Recreation  \u00b7  Pazhassiraja College Pulpally', tx, HDR / 2 + 7.5);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor.apply(doc, NAVY);
+      doc.text((currentTab === 'solo' ? 'SOLO' : 'GROUP') + ' REGISTRATIONS', PW - MX, HDR / 2 - 4, { align: 'right' });
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(6.2);
+      doc.setTextColor.apply(doc, SLATE);
+      doc.text('Generated: ' + new Date().toLocaleString(), PW - MX, HDR / 2 + 2.5, { align: 'right' });
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(6.5);
+      doc.setTextColor.apply(doc, GOLD);
+      doc.text(String(count) + ' Record' + (count !== 1 ? 's' : ''), PW - MX, HDR / 2 + 8.5, { align: 'right' });
+
+      // Bottom gold hairline
+      doc.setFillColor.apply(doc, GOLD);
+      doc.rect(0, HDR - 0.8, PW, 0.8, 'F');
+    }
+
+    function drawFooter(page, total) {
+      var fy = PH - FTR;
+      doc.setFillColor.apply(doc, BG_ALT);
+      doc.rect(0, fy, PW, FTR, 'F');
+      doc.setFillColor.apply(doc, GOLD);
+      doc.rect(0, fy, PW, 0.8, 'F');
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(6);
+      doc.setTextColor.apply(doc, SLATE);
+      doc.text(
+        'EIGAVERSA  \u00b7  ' + (currentTab === 'solo' ? 'Solo' : 'Group') + ' Registrations  \u00b7  Pazhassiraja College Pulpally',
+        MX, fy + FTR - 3.5
+      );
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(6.5);
+      doc.setTextColor.apply(doc, NAVY);
+      doc.text('Page ' + page + ' of ' + total, PW - MX, fy + FTR - 3.5, { align: 'right' });
+    }
+
+    drawHeader();
+
+    var scIdx = headings.indexOf('Status');
+
+    doc.autoTable({
+      startY: HDR + 4,
+      head:   [headings],
+      body:   bodyRows,
+      margin: { left: MX, right: MX, bottom: FTR + 4 },
+      tableLineColor: LINE,
+      tableLineWidth: 0.15,
+      styles: {
+        font:        'helvetica',
+        fontSize:    7,
+        cellPadding: { top: 3, bottom: 3, left: 3.2, right: 3.2 },
+        textColor:   BODY,
+        lineColor:   LINE,
+        lineWidth:   0.15,
+        overflow:    'linebreak'
+      },
+      headStyles: {
+        fillColor:   NAVY,
+        textColor:   WHITE,
+        fontStyle:   'bold',
+        fontSize:    7.2,
+        cellPadding: { top: 3.8, bottom: 3.8, left: 3.2, right: 3.2 },
+        halign:      'left',
+        lineWidth:   0
+      },
+      alternateRowStyles: { fillColor: BG_ALT },
+      didParseCell: function (data) {
+        if (data.section !== 'body') return;
+        if (data.column.index === 0) {
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.textColor = NAVY;
+        }
+        if (data.column.index === scIdx) {
+          var b = sBadge(data.cell.raw);
+          data.cell.styles.fillColor = b.bg;
+          data.cell.styles.textColor = b.tx;
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.fontSize  = 6.5;
+          data.cell.styles.halign    = 'center';
+        }
+      },
+
+      didDrawPage: function (data) {
+        if (data.pageNumber > 1) drawHeader();
+        drawFooter(data.pageNumber, '\u2013');
+      }
+    });
+
+    var n = doc.internal.getNumberOfPages();
+    for (var i = 1; i <= n; i++) { doc.setPage(i); drawFooter(i, n); }
+
+    var url;
+    try { url = doc.output('bloburl'); } catch (e) { url = null; }
+    if (!url) { showToast('PDF could not be generated. Please try again.'); return; }
+    openPdfPreview(url, title, count);
+  }
+
+  /* --- PDF Preview Modal --- */
+
+
+
+  function openPdfPreview(url, title, count) {
+    var existing = document.getElementById('pdf-preview-modal');
+    if (existing) existing.remove();
+
+    var modal = document.createElement('div');
+    modal.className = 'pdf-preview-modal';
+    modal.id = 'pdf-preview-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'PDF preview');
+
+    var shell = document.createElement('div');
+    shell.className = 'pdf-preview-shell';
+
+    var bar = document.createElement('div');
+    bar.className = 'pdf-preview-bar';
+
+    var barTitle = document.createElement('span');
+    barTitle.className = 'pdf-preview-title';
+    barTitle.textContent = title + ' (' + count + ' registrations)';
+    bar.appendChild(barTitle);
+
+    var barActions = document.createElement('div');
+    barActions.className = 'pdf-preview-actions';
+
+    var downloadBtn = document.createElement('a');
+    downloadBtn.className = 'btn btn-primary';
+    downloadBtn.textContent = 'Download PDF';
+    downloadBtn.href = url;
+    downloadBtn.setAttribute('download', 'eigaversa_' + currentTab + '_registrations.pdf');
+    barActions.appendChild(downloadBtn);
+
+    var closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'btn btn-ghost';
+    closeBtn.textContent = 'Close';
+    closeBtn.addEventListener('click', function () {
+      modal.remove();
+      URL.revokeObjectURL(url);
+    });
+    barActions.appendChild(closeBtn);
+
+    bar.appendChild(barActions);
+
+    var embed = document.createElement('iframe');
+    embed.className = 'pdf-preview-frame';
+    embed.title = 'PDF preview';
+
+    shell.appendChild(bar);
+    shell.appendChild(embed);
+    modal.appendChild(shell);
+    document.body.appendChild(modal);
+    embed.src = url;
+
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) {
+        modal.remove();
+        URL.revokeObjectURL(url);
+      }
+    });
   }
 
   /* --- Init --- */
