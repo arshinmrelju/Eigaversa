@@ -627,10 +627,32 @@ h3 {
   filter: drop-shadow(0 0 5px rgba(255, 215, 120, 0.7));
 }
 
+.genre-chip-text {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
 .genre-chip-label {
   position: relative;
   z-index: 2;
   padding-inline: 4px;
+}
+
+.genre-chip-sub {
+  position: relative;
+  z-index: 2;
+  display: block;
+  padding-inline: 4px;
+  font-size: 0.68em;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  color: inherit;
+  opacity: 0.75;
 }
 
 .genre-chip .chip-icon {
