@@ -335,6 +335,58 @@
     });
   }
 
+  /* ---------- Audio & Haptic Feedback ---------- */
+
+  function playScanFeedback(isSuccess) {
+    // Haptic vibration for mobile scanner devices
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      try {
+        navigator.vibrate(isSuccess ? [80, 40, 80] : [250]);
+      } catch (e) {}
+    }
+
+    // Web Audio API instant chime/beep
+    try {
+      var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      var audioCtx = new AudioContextClass();
+
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      var osc = audioCtx.createOscillator();
+      var gain = audioCtx.createGain();
+
+      osc.type = 'sine';
+
+      if (isSuccess !== false) {
+        // High-tech two-tone scan success chime (C6 -> G6)
+        var now = audioCtx.currentTime;
+        osc.frequency.setValueAtTime(1046.5, now);
+        osc.frequency.setValueAtTime(1567.98, now + 0.08);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      } else {
+        // Error tone
+        var now = audioCtx.currentTime;
+        osc.frequency.setValueAtTime(300, now);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      }
+    } catch (e) {}
+  }
+
   function handleScan(text) {
     if (awaiting) return;
     var payload = parsePayload(text);
@@ -343,8 +395,12 @@
     var fb = getFirebase();
     if (!fb || !fb.isConfigured()) {
       setStatus('Firebase is not configured.', true);
+      playScanFeedback(false);
       return;
     }
+
+    // Trigger instant chime sound + haptic vibration effect
+    playScanFeedback(true);
 
     awaiting = true;
     lastScannedData = text;
