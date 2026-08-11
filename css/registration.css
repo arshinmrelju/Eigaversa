@@ -315,11 +315,9 @@
     position: absolute;
     top: 14px;
     left: 14px;
-    width: 22px;
-    height: 22px;
-    border-top: 2px solid rgba(233, 195, 119, 0.35);
-    border-left: 2px solid rgba(233, 195, 119, 0.35);
-    border-top-left-radius: 4px;
+    width: 0;
+    height: 0;
+    border: none;
     pointer-events: none;
   }
 
@@ -431,11 +429,37 @@
   .member-card {
     padding: 16px 12px 2px;
   }
+}
 
-  .reg-form::after {
-    top: 12px;
-    left: 12px;
-    width: 18px;
-    height: 18px;
+/* ==========================================================
+   Registration — iOS / Mobile Strict Overflow Guard
+   (keep natural vertical scroll)
+   ========================================================== */
+@supports (-webkit-touch-callout: none) {
+  .reg-main,
+  .reg-hero,
+  .reg-section,
+  .reg-wrap,
+  .reg-form,
+  .members-container,
+  .member-card,
+  .form-actions {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .reg-main,
+  .reg-hero,
+  .reg-section,
+  .reg-wrap,
+  .reg-form,
+  .members-container,
+  .member-card,
+  .form-actions,
+  .members-head {
+    width: 100%;
+    max-width: 100%;
   }
 }

@@ -44,6 +44,10 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 90px;
+  overflow-x: clip;
+  overscroll-behavior-x: none;
+  width: 100%;
+  max-width: 100%;
 }
 
 body {
@@ -52,7 +56,13 @@ body {
   color: var(--clr-text);
   line-height: 1.65;
   min-height: 100vh;
-  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+  overflow-y: auto;
+  overscroll-behavior-x: none;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
 }
@@ -77,6 +87,15 @@ ul {
   max-width: var(--max-width);
   margin-inline: auto;
   padding-inline: 20px;
+}
+
+main,
+.site-header,
+.site-footer,
+.hero,
+.section {
+  width: 100%;
+  max-width: 100%;
 }
 
 .section {
@@ -317,7 +336,8 @@ h3 {
   display: flex;
   align-items: center;
   padding-block: 96px;
-  overflow: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
   min-height: calc(100svh - 68px);
   isolation: isolate;
 }
@@ -367,6 +387,8 @@ h3 {
   -webkit-text-stroke: 1px rgba(233, 195, 119, 0.14);
   user-select: none;
   pointer-events: none;
+  max-width: none;
+  contain: layout paint;
 }
 
 .film-strip {
@@ -1150,7 +1172,8 @@ h3 {
     min-height: 100svh;
     display: flex;
     align-items: center;
-    overflow: visible;
+    overflow-x: clip;
+    overflow-y: visible;
   }
 
   .hero::before {
@@ -1184,17 +1207,9 @@ h3 {
     z-index: 1;
   }
 
-  /* CINEMA watermark — centred, sized to fit the phone width */
+  /* CINEMA watermark — hide on mobile to avoid overlapping CTA buttons & footer */
   .hero-watermark {
-    right: auto;
-    left: 50%;
-    bottom: 10px;
-    transform: translateX(-50%);
-    font-size: clamp(2.6rem, 12vw, 3.8rem);
-    letter-spacing: 0.18em;
-    -webkit-text-stroke: 1px rgba(233, 195, 119, 0.28);
-    z-index: 0;
-    white-space: nowrap;
+    display: none;
   }
 
   /* ── Mobile poster card (compact cinematic display) ── */
@@ -1687,19 +1702,6 @@ h3 {
     background: var(--grad-primary);
   }
 
-  .reg-form::after {
-    content: "";
-    position: absolute;
-    top: 14px;
-    left: 14px;
-    width: 22px;
-    height: 22px;
-    border-top: 2px solid rgba(233, 195, 119, 0.35);
-    border-left: 2px solid rgba(233, 195, 119, 0.35);
-    border-top-left-radius: 4px;
-    pointer-events: none;
-  }
-
   /* ── Sections ── */
   .section-head {
     margin-bottom: 36px;
@@ -1854,7 +1856,7 @@ h3 {
   }
 
   .hero-watermark {
-    font-size: clamp(2.2rem, 13vw, 3rem);
+    display: none;
   }
 
   .hero-intro {
@@ -1981,7 +1983,65 @@ h3 {
   }
 
   .hero-watermark {
-    font-size: 2rem;
+    display: none;
+  }
+}
+
+/* ==========================================================
+   iOS / Mobile — Strict Horizontal Overflow Prevention
+   (without breaking vertical momentum scroll)
+   ========================================================== */
+@supports (-webkit-touch-callout: none) {
+  html {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+    overscroll-behavior-x: none;
+  }
+
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+    overflow-y: auto;
+    overscroll-behavior-x: none;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: auto;
+  }
+}
+
+@media (max-width: 1024px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+    overflow-y: auto;
+    overscroll-behavior-x: none;
+    touch-action: pan-y;
+  }
+
+  body {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: auto;
+  }
+
+  .genre-chip {
+    max-width: calc(100vw - 40px);
+    overflow: hidden;
+  }
+
+  .hero-watermark {
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    max-width: none;
+    width: auto;
+  }
+
+  .film-strip {
+    display: none;
   }
 }
 
