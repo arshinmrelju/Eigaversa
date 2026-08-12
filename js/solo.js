@@ -170,20 +170,29 @@
       theme: form.querySelector('#theme').value
     };
 
-    setBusy(true);
+    function doSubmit() {
+      setBusy(true);
 
-    fb.saveSoloRegistration(data).then(function (result) {
-      setBusy(false);
-      if (result) {
-        form.reset();
-        showMessage('Registration submitted successfully! Your entry pass has been generated below.');
-        if (window.EigaversaTicket) {
-          data.id = result.id;
-          window.EigaversaTicket.showSoloPass(data, result.registrationId);
+      fb.saveSoloRegistration(data).then(function (result) {
+        setBusy(false);
+        if (result) {
+          form.reset();
+          showMessage('Registration submitted successfully! Your entry pass has been generated below.');
+          if (window.EigaversaTicket) {
+            data.id = result.id;
+            window.EigaversaTicket.showSoloPass(data, result.registrationId);
+          }
+        } else {
+          showMessage('Registration failed. Please check your connection and try again.', true);
         }
-      } else {
-        showMessage('Registration failed. Please check your connection and try again.', true);
-      }
-    });
+      });
+    }
+
+    var rulesKey = 'solo|' + data.phone;
+    if (window.EigaversaRules && !window.EigaversaRules.hasAccepted(rulesKey)) {
+      window.EigaversaRules.show(rulesKey, doSubmit);
+    } else {
+      doSubmit();
+    }
   });
 })();

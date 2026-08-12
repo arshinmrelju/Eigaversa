@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/registration.css">
   <link rel="stylesheet" href="css/ticket.css">
+  <link rel="stylesheet" href="css/rules.css">
 </head>
 <body>
 
@@ -138,11 +139,108 @@
     </div>
   </footer>
 
+  <!-- ── RULES & REGULATIONS MODAL (shown before first submission) ── -->
+  <div id="rules-modal" class="rules-overlay hidden">
+    <div class="rules-card">
+      <button type="button" id="rules-close-x" class="rules-close-x" aria-label="Close">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+      <div class="rules-modal-header">
+        <div class="rules-header-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+            <polyline points="10 9 9 9 8 9" />
+          </svg>
+        </div>
+        <div>
+          <h2 class="rules-modal-title">Rules &amp; Regulations</h2>
+          <p class="rules-modal-subtitle">Please read and accept all terms to participate</p>
+        </div>
+      </div>
+
+      <div class="rules-scroll-container" id="rules-scroll-container">
+        <div class="rule-item">
+          <div class="rule-number">01</div>
+          <div class="rule-body">
+            <h3 class="rule-title">Duration</h3>
+            <p class="rule-text">The performance should be a maximum of 5 minutes.</p>
+          </div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-number rule-number-navy">02</div>
+          <div class="rule-body">
+            <h3 class="rule-title">Costume</h3>
+            <p class="rule-text">Participants should wear costumes suitable for the selected movie scene and characters.</p>
+          </div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-number rule-number-gold">03</div>
+          <div class="rule-body">
+            <h3 class="rule-title">Acting</h3>
+            <p class="rule-text">Acting and facial expressions are very important. Participants should perform the characters effectively.</p>
+          </div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-number">04</div>
+          <div class="rule-body">
+            <h3 class="rule-title">Dialogue &amp; Speaker Connection</h3>
+            <p class="rule-text">Dialogue delivery should be clear, and there should be proper connection and coordination between the speakers.</p>
+          </div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-number rule-number-navy">05</div>
+          <div class="rule-body">
+            <h3 class="rule-title">Registration</h3>
+            <p class="rule-text">After registration, participants must take a screenshot of the scanner/registration confirmation and keep it safely for verification.</p>
+          </div>
+        </div>
+        <div class="rules-end-marker" id="rules-end-marker">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          <span>End of Rules &amp; Regulations</span>
+        </div>
+      </div>
+
+      <div class="rules-scroll-hint" id="rules-scroll-hint">
+        <svg class="scroll-hint-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+        <span>Scroll through all rules to unlock</span>
+      </div>
+
+      <div class="rules-checkboxes">
+        <label class="rules-checkbox-item rules-master-checkbox" id="rules-master-checkbox-wrapper">
+          <input type="checkbox" id="rule-check-all" disabled>
+          <span class="checkbox-custom checkbox-master"></span>
+          <span class="checkbox-label checkbox-master-label">
+            <strong>I have read and agree to ALL Rules &amp; Regulations stated above</strong>
+          </span>
+        </label>
+      </div>
+
+      <div id="rules-agree-error" class="rules-error" aria-live="polite"></div>
+
+      <div class="rules-modal-actions">
+        <button type="button" id="rules-confirm-btn" class="btn btn-primary" disabled>
+          Accept &amp; Continue
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script src="js/firebase-config.js"></script>
   <script type="module" src="js/firebase-service.js"></script>
   <script src="js/main.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
   <script src="js/ticket.js"></script>
+  <script src="js/rules.js"></script>
   <script src="js/solo.js"></script>
 </body>
 

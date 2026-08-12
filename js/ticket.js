@@ -226,7 +226,7 @@
           '</div>' +
           '<div class="ticket-venue-info">' +
             '<strong>Pazhassiraja College Pulpally</strong>' +
-            'Dept. of English &bull; Main Stage' +
+            'Dept. of English' +
           '</div>' +
         '</div>' +
       '</div>';

@@ -341,22 +341,31 @@ document.addEventListener('DOMContentLoaded', function () {
       members: collectMembers()
     };
 
-    setBusy(true);
+    function doSubmit() {
+      setBusy(true);
 
-    fb.saveGroupRegistration(data).then(function (result) {
-      setBusy(false);
-      if (result) {
-        form.reset();
-        rebuildMembers();
-        showSuccess('Group registration submitted successfully! Your entry pass has been generated below.');
-        if (window.EigaversaTicket) {
-          data.id = result.id;
-          window.EigaversaTicket.showGroupPass(data, result.registrationId);
+      fb.saveGroupRegistration(data).then(function (result) {
+        setBusy(false);
+        if (result) {
+          form.reset();
+          rebuildMembers();
+          showSuccess('Group registration submitted successfully! Your entry pass has been generated below.');
+          if (window.EigaversaTicket) {
+            data.id = result.id;
+            window.EigaversaTicket.showGroupPass(data, result.registrationId);
+          }
+        } else {
+          showSuccess('Registration failed. Please check your connection and try again.', true);
         }
-      } else {
-        showSuccess('Registration failed. Please check your connection and try again.', true);
-      }
-    });
+      });
+    }
+
+    var rulesKey = 'group|' + data.phone;
+    if (window.EigaversaRules && !window.EigaversaRules.hasAccepted(rulesKey)) {
+      window.EigaversaRules.show(rulesKey, doSubmit);
+    } else {
+      doSubmit();
+    }
   });
 
   function rebuildMembers() {
