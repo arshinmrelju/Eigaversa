@@ -680,6 +680,97 @@ h3 {
   min-height: 52px;
 }
 
+/* ---------- Registrations-closed modal ---------- */
+.reg-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(10, 11, 13, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.reg-modal[hidden] {
+  display: none;
+}
+
+.reg-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  padding: 2.5rem 2rem 2rem;
+  text-align: center;
+  background: linear-gradient(160deg, #15161a 0%, #1b1d22 100%);
+  border: 1px solid var(--clr-border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.7);
+  animation: overlayCardIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.reg-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--clr-border);
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reg-modal-close:hover {
+  color: var(--clr-text);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.reg-modal-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--clr-error);
+  background: rgba(224, 96, 77, 0.12);
+  border: 1px solid rgba(224, 96, 77, 0.35);
+}
+
+.reg-modal-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.reg-modal-card h2 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--clr-gold);
+  letter-spacing: 0.04em;
+  margin: 0 0 10px;
+}
+
+.reg-modal-desc {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--clr-text-muted);
+  margin: 0 0 22px;
+}
+
+.reg-modal-card .btn {
+  width: 100%;
+  min-height: 48px;
+}
+
 /* ---------- Hero poster card ---------- */
 .hero-poster {
   position: relative;

@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var eyeIconClosed = document.getElementById('eye-icon-closed');
   var logoutBtn = document.getElementById('logout-btn');
   var exportBtn = document.getElementById('export-pdf-btn');
+  var toggleRegBtn = document.getElementById('toggle-reg-btn');
 
   var tabSolo = document.getElementById('tab-solo');
   var tabGroups = document.getElementById('tab-groups');
@@ -78,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var unsubSolo = null;
   var unsubGroups = null;
   var toastTimer = null;
+  var registrationsOpen = null;
 
   function escapeHtml(str) {
     return String(str == null ? '' : str)
@@ -119,6 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
     loginView.hidden = true;
     dashboardView.hidden = false;
     startSubscriptions();
+    loadRegistrationState();
   }
 
   function setLoginMsg(message, isError) {
@@ -193,6 +196,50 @@ document.addEventListener('DOMContentLoaded', function () {
       soloList = [];
       groupList = [];
       showLogin();
+    });
+  }
+
+  /* --- Registration open/close controls --- */
+
+  var regToggleIconOpen = toggleRegBtn ? toggleRegBtn.querySelector('.reg-toggle-icon--open') : null;
+  var regToggleIconClosed = toggleRegBtn ? toggleRegBtn.querySelector('.reg-toggle-icon--closed') : null;
+  var regToggleLabel = document.getElementById('reg-toggle-label');
+
+  function refreshRegistrationButtons(open) {
+    registrationsOpen = open;
+    if (!toggleRegBtn) return;
+    toggleRegBtn.classList.toggle('is-open', open === true);
+    toggleRegBtn.classList.toggle('is-closed', open !== true);
+    toggleRegBtn.setAttribute('aria-label', open === true ? 'Close registrations' : 'Open registrations');
+    if (regToggleIconOpen) regToggleIconOpen.hidden = open !== true;
+    if (regToggleIconClosed) regToggleIconClosed.hidden = open === true;
+    if (regToggleLabel) regToggleLabel.textContent = open === true ? 'Open' : 'Closed';
+  }
+
+  function loadRegistrationState() {
+    if (!fb) return;
+    fb.getRegistrationOpenState().then(function (open) {
+      refreshRegistrationButtons(open === false ? false : true);
+    });
+  }
+
+  function setRegistrationState(open) {
+    if (!fb || !toggleRegBtn) return;
+    toggleRegBtn.disabled = true;
+    fb.setRegistrationOpenState(open).then(function (ok) {
+      toggleRegBtn.disabled = false;
+      if (ok) {
+        refreshRegistrationButtons(open);
+        showToast(open ? 'Registrations are now OPEN' : 'Registrations are now CLOSED');
+      } else {
+        showToast('Failed to ' + (open ? 'open' : 'close') + ' registrations. Try again.');
+      }
+    });
+  }
+
+  if (toggleRegBtn) {
+    toggleRegBtn.addEventListener('click', function () {
+      setRegistrationState(!registrationsOpen);
     });
   }
 

@@ -422,6 +422,55 @@
   font-size: 0.85rem;
 }
 
+/* Small registration toggle button */
+.reg-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 8px;
+  background: var(--admin-surface-2);
+  border: 1px solid var(--admin-border);
+  color: var(--admin-amber);
+  cursor: pointer;
+  font-family: var(--admin-font);
+  font-weight: 600;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.reg-toggle-label {
+  line-height: 1;
+}
+
+.reg-toggle-btn:hover {
+  border-color: var(--admin-amber);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+}
+
+.reg-toggle-btn.is-closed {
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.35);
+}
+
+.reg-toggle-btn.is-closed:hover {
+  border-color: #f87171;
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.18);
+}
+
+.reg-toggle-btn.is-open {
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.35);
+}
+
+.reg-toggle-btn .reg-toggle-icon[hidden] {
+  display: none !important;
+}
+
 /* ---------- Dashboard Content ---------- */
 .admin-content {
   padding-block: 32px 60px;
@@ -1484,6 +1533,15 @@
   /* Only Scan QR is needed on mobile; hide Export PDF and Logout */
   #export-pdf-btn,
   #logout-btn {
+    display: none !important;
+  }
+
+  /* Keep registration open/close controls visible on mobile */
+  #toggle-reg-btn {
+    display: inline-flex !important;
+  }
+
+  #toggle-reg-btn[hidden] {
     display: none !important;
   }
 

@@ -194,6 +194,41 @@ async function setAdminConfig(accessCode) {
   }
 }
 
+/**
+ * Read the registration open/close state.
+ * @returns {Promise<boolean|null>} true = open, false = closed, null = unknown
+ */
+async function getRegistrationOpenState() {
+  if (!db) return null;
+  try {
+    var snap = await getDoc(doc(db, 'system_config', 'eigaversa_admin'));
+    if (!snap.exists()) return true; // assume open by default
+    // Only treat as closed when explicitly stored as false.
+    return snap.data().registrationsOpen !== false;
+  } catch (e) {
+    console.warn('Firestore getRegistrationOpenState error:', e);
+    return null;
+  }
+}
+
+/**
+ * Set the registration open/close state.
+ * @param {boolean} open true to open, false to close
+ * @returns {Promise<boolean>}
+ */
+async function setRegistrationOpenState(open) {
+  if (!db) return false;
+  try {
+    await setDoc(doc(db, 'system_config', 'eigaversa_admin'), {
+      registrationsOpen: !!open
+    }, { merge: true });
+    return true;
+  } catch (e) {
+    console.warn('Firestore setRegistrationOpenState error:', e);
+    return false;
+  }
+}
+
 /* ---------- Live subscriptions ---------- */
 
 function subscribeToCollection(name, callback) {
@@ -330,6 +365,8 @@ window.EigaversaFirebase = {
   getRegistrationById: getRegistrationById,
   getAdminConfig: getAdminConfig,
   setAdminConfig: setAdminConfig,
+  getRegistrationOpenState: getRegistrationOpenState,
+  setRegistrationOpenState: setRegistrationOpenState,
   subscribeToSolo: subscribeToSolo,
   subscribeToGroups: subscribeToGroups,
   updateRegistrationStatus: updateRegistrationStatus,

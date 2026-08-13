@@ -67,6 +67,62 @@
 })();
 
 /* ==========================================================
+   EIGAVERSA — Registration open/close gate (home page)
+   When registrations are closed, clicking Solo/Group shows
+   a modal instead of navigating to the registration page.
+   ========================================================== */
+(function () {
+  'use strict';
+
+  /* DOMContentLoaded guarantees the ES module firebase-service.js
+     has executed and window.EigaversaFirebase is defined. */
+  document.addEventListener('DOMContentLoaded', function () {
+    var soloLink = document.getElementById('reg-solo-link');
+    var groupLink = document.getElementById('reg-group-link');
+    var modal = document.getElementById('reg-closed-modal');
+    var modalClose = document.getElementById('reg-modal-close');
+    var modalOk = document.getElementById('reg-modal-ok');
+
+    if (!modal) return; /* only present on index.html */
+
+    function showModal() {
+      modal.hidden = false;
+    }
+
+    function hideModal() {
+      modal.hidden = true;
+    }
+
+    if (modalClose) modalClose.addEventListener('click', hideModal);
+    if (modalOk) modalOk.addEventListener('click', hideModal);
+    modal.addEventListener('click', function (event) {
+      if (event.target === modal) hideModal();
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') hideModal();
+    });
+
+    var regLinks = [soloLink, groupLink].filter(Boolean);
+
+    var fb = window.EigaversaFirebase;
+    if (fb && fb.isConfigured()) {
+      fb.getRegistrationOpenState().then(function (open) {
+        var isOpen = open !== false;
+
+        regLinks.forEach(function (link) {
+          link.addEventListener('click', function (event) {
+            if (!isOpen) {
+              event.preventDefault();
+              showModal();
+            }
+          });
+        });
+      });
+    }
+  });
+})();
+
+/* ==========================================================
    EIGAVERSA — Index Page Music (proud, game-winning feel)
    Only runs on index.html / home page.
    ========================================================== */
